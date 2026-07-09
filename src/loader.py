@@ -3,38 +3,57 @@ import pandas as pd
 
 from src.config import RAW_DATA_DIR
 
+# Files that contain metadata in the first row
+CORE_DATASETS = {
+    "companies",
+    "profitandloss",
+    "balancesheet",
+    "cashflow",
+    "analysis",
+    "documents",
+    "prosandcons",
+}
+
 
 class ExcelLoader:
     """
-    Loads all Excel datasets from the raw data directory.
+    Production-ready Excel Loader
     """
 
     def __init__(self):
-        self.dataframes = {}
+        self.datasets = {}
 
     def load_all(self):
         excel_files = sorted(RAW_DATA_DIR.glob("*.xlsx"))
 
-        if not excel_files:
-            raise FileNotFoundError("No Excel files found in data/raw")
-
-        print("\nLoading datasets...\n")
+        print("\n" + "=" * 70)
+        print("N100 FINANCIAL INTELLIGENCE PLATFORM")
+        print("Loading datasets...")
+        print("=" * 70)
 
         for file in excel_files:
-            try:
-                df = pd.read_excel(file)
 
-                self.dataframes[file.stem] = df
+            header = 1 if file.stem in CORE_DATASETS else 0
+
+            try:
+
+                df = pd.read_excel(file, header=header)
+
+                self.datasets[file.stem] = df
 
                 print(
-                    f"Loaded {file.name:<25}"
+                    f"[✓] {file.name:<25}"
                     f" Rows: {df.shape[0]:>5}"
-                    f" Columns: {df.shape[1]:>3}"
+                    f" Cols: {df.shape[1]:>3}"
+                    f" Header={header}"
                 )
 
             except Exception as e:
-                print(f"Failed to load {file.name}: {e}")
 
-        print("\nFinished loading datasets.\n")
+                print(f"[✗] {file.name} -> {e}")
 
-        return self.dataframes
+        print("=" * 70)
+        print(f"Loaded {len(self.datasets)} datasets successfully.")
+        print("=" * 70)
+
+        return self.datasets
