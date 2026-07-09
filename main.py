@@ -1,4 +1,5 @@
 from src.loader import ExcelLoader
+from src.normalizer import DataNormalizer
 
 
 def main():
@@ -7,16 +8,17 @@ def main():
 
     datasets = loader.load_all()
 
-    print("\nDataset Summary")
-    print("-" * 70)
+    normalizer = DataNormalizer(datasets)
 
-    for name, df in datasets.items():
+    clean_data = normalizer.normalize()
 
-        print(
-            f"{name:<20}"
-            f"{df.shape[0]:>6} rows"
-            f"{df.shape[1]:>6} cols"
-        )
+    print("\nFinal Datasets")
+
+    print("-" * 60)
+
+    for name, df in clean_data.items():
+
+        print(f"{name:<20}{df.shape}")
 
 
 if __name__ == "__main__":
