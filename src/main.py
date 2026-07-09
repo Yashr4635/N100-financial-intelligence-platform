@@ -4,11 +4,9 @@ from src.etl.normalizer import DataNormalizer
 
 def main():
     loader = ExcelLoader()
-
     datasets = loader.load_all()
 
     normalizer = DataNormalizer(datasets)
-
     clean_data = normalizer.normalize()
 
     print("\nFinal Datasets")

@@ -1,7 +1,7 @@
 from pathlib import Path
 import pandas as pd
 
-from src.config import RAW_DATA_DIR
+from src.utils.config import RAW_DATA_DIR
 
 # Files that contain metadata in the first row
 CORE_DATASETS = {
@@ -36,9 +36,7 @@ class ExcelLoader:
             header = 1 if file.stem in CORE_DATASETS else 0
 
             try:
-
                 df = pd.read_excel(file, header=header)
-
                 self.datasets[file.stem] = df
 
                 print(
@@ -49,7 +47,6 @@ class ExcelLoader:
                 )
 
             except Exception as e:
-
                 print(f"[✗] {file.name} -> {e}")
 
         print("=" * 70)
