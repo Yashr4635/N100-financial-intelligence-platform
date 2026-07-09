@@ -3,7 +3,7 @@ from pathlib import Path
 # -----------------------------
 # Project Root
 # -----------------------------
-BASE_DIR = Path(__file__).resolve().parent.parent
+BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
 # -----------------------------
 # Data Directories
