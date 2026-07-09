@@ -1,9 +1,11 @@
 from src.etl.loader import ExcelLoader
 from src.etl.normalizer import DataNormalizer
 from src.etl.validator import DataValidator
+from src.database.connection import DatabaseManager
 
 
 def main():
+
     loader = ExcelLoader()
     datasets = loader.load_all()
 
@@ -12,6 +14,10 @@ def main():
 
     validator = DataValidator(clean_data)
     validator.validate()
+
+    db = DatabaseManager()
+    db.save_datasets(clean_data)
+    db.close()
 
 
 if __name__ == "__main__":
