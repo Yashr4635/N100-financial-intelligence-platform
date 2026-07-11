@@ -27,3 +27,8 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+    from src.analytics.ratio_engine import RatioEngine
+
+engine = RatioEngine()
+engine.run()
