@@ -1,0 +1,22 @@
+dataset,rule,message
+analysis,DQ-06,15 duplicate company ids
+balancesheet,DQ-06,1214 duplicate company ids
+balancesheet,DQ-07,175 duplicate company/year
+cashflow,DQ-05,8 missing values
+cashflow,DQ-06,1087 duplicate company ids
+cashflow,DQ-07,23 duplicate company/year
+cashflow,DQ-08,12 invalid years
+companies,DQ-05,9 missing values
+documents,DQ-05,52 missing values
+documents,DQ-06,1486 duplicate company ids
+documents,DQ-07,1 duplicate company/year
+financial_ratios,DQ-05,170 missing values
+financial_ratios,DQ-06,1092 duplicate company ids
+financial_ratios,DQ-07,119 duplicate company/year
+market_cap,DQ-06,460 duplicate company ids
+profitandloss,DQ-05,331 missing values
+profitandloss,DQ-06,1176 duplicate company ids
+profitandloss,DQ-07,13 duplicate company/year
+prosandcons,DQ-05,6 missing values
+prosandcons,DQ-06,11 duplicate company ids
+stock_prices,DQ-06,5428 duplicate company ids
