@@ -1,0 +1,11 @@
+broad_sector,companies,avg_health_score,avg_roe,avg_profit_margin,avg_debt_to_equity
+Communication Services,2,36.67,7.78,44.93,1.0
+Consumer Discretionary,14,63.22,236.55,8.54,0.61
+Consumer Staples,7,79.52,37.33,14.26,0.19
+Energy,13,40.28,8.65,12.5,2.46
+Financials,22,43.95,34.09,36.25,8.08
+Healthcare,6,60.14,16.13,14.59,0.38
+Industrials,10,63.63,855.01,14.06,0.65
+Information Technology,5,90.63,27.21,16.08,0.07
+Materials,9,58.86,17.45,9.34,0.6
+Real Estate,2,40.24,8.36,14.72,1.69

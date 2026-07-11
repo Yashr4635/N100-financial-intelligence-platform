@@ -4,6 +4,7 @@ from src.etl.validator import DataValidator
 from src.database.connection import DatabaseManager
 from src.analytics.health_score import HealthScoreEngine
 from src.analytics.ratio_engine import RatioEngine
+from src.analytics.sector_analysis import SectorAnalysis
 
 def main():
     # Step 1: Load datasets
@@ -36,3 +37,6 @@ engine.run()
 
 health = HealthScoreEngine()
 health.calculate_score()
+
+sector = SectorAnalysis()
+sector.run()
