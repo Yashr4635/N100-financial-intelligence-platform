@@ -17,6 +17,7 @@ market_cap,DQ-06,460 duplicate company ids
 profitandloss,DQ-05,331 missing values
 profitandloss,DQ-06,1176 duplicate company ids
 profitandloss,DQ-07,13 duplicate company/year
+profitandloss,DQ-10,100 missing years
 prosandcons,DQ-05,6 missing values
 prosandcons,DQ-06,11 duplicate company ids
 stock_prices,DQ-06,5428 duplicate company ids
