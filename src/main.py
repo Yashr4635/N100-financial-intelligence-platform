@@ -2,7 +2,8 @@ from src.etl.loader import ExcelLoader
 from src.etl.normalizer import DataNormalizer
 from src.etl.validator import DataValidator
 from src.database.connection import DatabaseManager
-
+from src.analytics.health_score import HealthScoreEngine
+from src.analytics.ratio_engine import RatioEngine
 
 def main():
     # Step 1: Load datasets
@@ -28,7 +29,10 @@ def main():
 if __name__ == "__main__":
     main()
 
-    from src.analytics.ratio_engine import RatioEngine
+    
 
 engine = RatioEngine()
 engine.run()
+
+health = HealthScoreEngine()
+health.calculate_score()
