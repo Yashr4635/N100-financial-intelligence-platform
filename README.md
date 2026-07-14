@@ -385,19 +385,16 @@ An interactive, multi-page **Streamlit** dashboard powered by **Plotly** visuali
 ---
 
 ## 📸 Screenshots
-
 <table>
   <tr>
-    <td align="center" width="50%"><b>🏠 Overview</b><br><img src="docs/screenshots/overview.png" width="420"/></td>
-    <td align="center" width="50%"><b>🏢 Company Analysis</b><br><img src="docs/screenshots/company_analysis.png" width="420"/></td>
+    <td align="center" width="50%"><b>🏠 Overview</b><br><img src="docs/screenshots/Screenshot%202026-07-14%20at%201.29.30%20PM.png" width="420"/></td>
+    <td align="center" width="50%"><b>🏢 Company Analysis</b><br><img src="docs/screenshots/Screenshot%202026-07-14%20at%201.29.42%20PM.png" width="420"/></td>
   </tr>
   <tr>
-    <td align="center" width="50%"><b>🏭 Sector Analysis</b><br><img src="docs/screenshots/sector_analysis.png" width="420"/></td>
-    <td align="center" width="50%"><b>🔎 Investment Screener</b><br><img src="docs/screenshots/investment_screener.png" width="420"/></td>
+    <td align="center" width="50%"><b>🏭 Sector Analysis</b><br><img src="docs/screenshots/Screenshot%202026-07-14%20at%201.29.51%20PM.png" width="420"/></td>
+    <td align="center" width="50%"><b>🔎 Investment Screener</b><br><img src="docs/screenshots/Screenshot%202026-07-14%20at%201.29.58%20PM.png" width="420"/></td>
   </tr>
 </table>
-
----
 
 ## ⚙️ Installation
 
