@@ -421,7 +421,7 @@ with tab_overview:
                 showlegend=True,
                 legend=dict(orientation="h", yanchor="bottom", y=-0.25),
             )
-            st.plotly_chart(fig2, use_container_width=True)
+            st.plotly_chart(fig2, width="stretch")
         else:
             st.info("Sector column not found in dataset.")
 
