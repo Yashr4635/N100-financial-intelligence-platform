@@ -360,6 +360,7 @@ Benchmarks companies across their sector using:
 - Average ROE
 - Average Health Score
 - Debt Analysis
+- 
 
 ### 🔎 Investment Screener
 
@@ -557,7 +558,7 @@ This project is licensed under the **MIT License** — see the [LICENSE](LICENSE
 
 <div align="center">
 
-### **Yashaswi R**
+### ** DS Yashaswi **
 
 **B.Tech CSE (Data Science)**
 Python Developer • Data Analyst • Financial Analytics
