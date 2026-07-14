@@ -1,45 +1,71 @@
-# 📊 N100 Financial Intelligence Platform
+# 📈 N100 Financial Intelligence Platform
 
-A production-oriented Financial Intelligence Platform that performs ETL (Extract, Transform, Load), data quality validation, SQLite database creation, and financial data processing for NIFTY 100 companies.
+## Overview
 
----
+The N100 Financial Intelligence Platform is an end-to-end financial analytics system built using Python, SQLite, Pandas, and Streamlit.
 
-# 🚀 Project Overview
+It automates:
 
-The N100 Financial Intelligence Platform is designed to build a clean, validated, and queryable financial database from multiple Excel datasets.
-
-The project processes company financial statements, stock prices, market capitalization, cash flow, balance sheet, profit & loss statements, and sector information through an automated ETL pipeline.
-
----
-
-# ✨ Features
-
-- ✅ Smart Excel Loader
-- ✅ Automatic Header Detection
-- ✅ Dataset Normalization
-- ✅ 16 Data Quality Validation Rules
-- ✅ SQLite Database Generation
-- ✅ ETL Load Audit Report
-- ✅ Validation Failure Report
-- ✅ SQL Exploratory Queries
-- ✅ Unit Testing with Pytest
+- ETL Pipeline
+- Data Validation
+- Financial Ratio Calculation
+- Company Health Score
+- Sector Analytics
+- Investment Screening
+- Interactive Dashboard
 
 ---
 
-# 📂 Project Structure
+## Features
+
+- Automated ETL Pipeline
+- SQLite Data Warehouse
+- Financial Ratio Engine
+- Health Score Engine
+- Sector Analytics
+- Investment Screener
+- Interactive Streamlit Dashboard
+- Unit Testing
+- Error Handling
+- Logging
+- Config Driven Architecture
+
+---
+
+## Tech Stack
+
+- Python
+- Pandas
+- SQLite
+- Streamlit
+- Plotly
+- OpenPyXL
+- Pytest
+
+---
+
+## Folder Structure
 
 ```text
-N100-FINANCIAL-INTELLIGENCE-PLATFORM/
-
-├── data/
-│   ├── raw/
-│   ├── processed/
-│   └── output/
+N100-Financial-Intelligence-Platform/
+│
+├── dashboard/
+│   └── app.py
+│
+├── src/
+│   ├── etl/
+│   ├── database/
+│   ├── analytics/
+│   ├── dashboard/
+│   └── utils/
 │
 ├── database/
 │   └── nifty100.db
 │
-├── docs/
+├── data/
+│   ├── raw/
+│   ├── processed/
+│   └── output/
 │
 ├── reports/
 │   ├── validation_failures.csv
@@ -49,44 +75,52 @@ N100-FINANCIAL-INTELLIGENCE-PLATFORM/
 │   ├── schema.sql
 │   └── exploratory_queries.sql
 │
-├── src/
-│   ├── etl/
-│   ├── database/
-│   ├── analytics/
-│   ├── dashboard/
-│   └── utils/
-│
 ├── tests/
+│   ├── test_loader.py
+│   ├── test_normalizer.py
+│   ├── test_validator.py
+│   └── test_database.py
 │
+├── docs/
+│   └── screenshots/
+│       ├── overview.png
+│       ├── company_analysis.png
+│       ├── sector_analysis.png
+│       └── investment_screener.png
+│
+├── requirements.txt
 └── README.md
 ```
 
 ---
 
-# ⚙️ ETL Pipeline
+## ETL Workflow
 
 ```
 Excel Files
-      │
-      ▼
+     │
+     ▼
 Excel Loader
-      │
-      ▼
-Normalization
-      │
-      ▼
-Validation
-      │
-      ▼
+     │
+     ▼
+Normalizer
+     │
+     ▼
+Validator
+     │
+     ▼
 SQLite Database
-      │
-      ▼
-Reports
+     │
+     ▼
+Analytics Engine
+     │
+     ▼
+Dashboard
 ```
 
 ---
 
-# 📊 Datasets Processed
+## Datasets Processed
 
 - Companies
 - Balance Sheet
@@ -103,7 +137,7 @@ Reports
 
 ---
 
-# 🗄 Database
+## Database
 
 SQLite database:
 
@@ -128,7 +162,7 @@ Main tables include:
 
 ---
 
-# ✅ Data Quality Validation
+## Data Quality Validation
 
 Current validation checks include:
 
@@ -151,7 +185,76 @@ Current validation checks include:
 
 ---
 
-# 📑 Generated Reports
+## Analytics Modules
+
+### Financial Ratio Engine
+
+Calculates:
+
+- ROE
+- Profit Margin
+- Debt to Equity
+- Asset Turnover
+- EPS
+- Financial Quality Score
+
+---
+
+### Health Score Engine
+
+Generates a score out of 100 using:
+
+- ROE
+- Profit Margin
+- Debt
+- Asset Turnover
+- EPS
+
+---
+
+### Sector Analytics
+
+Provides:
+
+- Sector Performance
+- Average ROE
+- Average Health Score
+- Debt Analysis
+
+---
+
+### Investment Screener
+
+Filters companies using:
+
+- Health Score ≥ 80
+- Financial Quality ≥ 4
+
+---
+
+## Dashboard
+
+Pages:
+
+- Overview
+- Company Analysis
+- Sector Analysis
+- Investment Screener
+
+<table>
+  <tr>
+    <td><b>Overview</b><br><img src="docs/screenshots/overview.png" width="400"/></td>
+    <td><b>Company Analysis</b><br><img src="docs/screenshots/company_analysis.png" width="400"/></td>
+  </tr>
+  <tr>
+    <td><b>Sector Analysis</b><br><img src="docs/screenshots/sector_analysis.png" width="400"/></td>
+    <td><b>Investment Screener</b><br><img src="docs/screenshots/investment_screener.png" width="400"/></td>
+  </tr>
+</table>
+
+---
+
+## Generated Reports
 
 After execution, the pipeline automatically generates:
 
@@ -163,7 +266,7 @@ reports/
 
 ---
 
-# 🧪 Testing
+## Testing
 
 Implemented using **Pytest**.
 
@@ -188,28 +291,18 @@ pytest tests -v
 
 ---
 
-# 🛠 Tech Stack
-
-- Python
-- Pandas
-- NumPy
-- SQLite
-- SQLAlchemy
-- OpenPyXL
-- Streamlit
-- Plotly
-- Pytest
-- Git
-- GitHub
-
----
-
-# ▶️ Run the Project
+## Installation
 
 Clone the repository:
 
 ```bash
 git clone https://github.com/Yashr4635/N100-financial-intelligence-platform.git
+```
+
+Move into the project folder:
+
+```bash
+cd N100-financial-intelligence-platform
 ```
 
 Create a virtual environment:
@@ -226,16 +319,32 @@ macOS/Linux
 source venv/bin/activate
 ```
 
+Windows
+
+```bash
+venv\Scripts\activate
+```
+
 Install dependencies:
 
 ```bash
 pip install -r requirements.txt
 ```
 
+---
+
+## Run
+
 Run the ETL pipeline:
 
 ```bash
 python -m src.main
+```
+
+Run the dashboard:
+
+```bash
+streamlit run dashboard/app.py
 ```
 
 Run unit tests:
@@ -246,29 +355,33 @@ pytest tests -v
 
 ---
 
-# 🚧 Roadmap
+## Roadmap
 
-## Completed
+### Completed
 
 - ETL Pipeline
 - Validation Engine
 - SQLite Database
+- Financial Ratio Engine
+- Health Score Engine
+- Sector Analytics
+- Investment Screener
+- Streamlit Dashboard
 - Testing
 - SQL Schema
 - Load Audit
 
-## Next
+### Next
 
-- Financial Ratio Engine
-- Company Health Score
-- Investment Screener
-- Streamlit Dashboard
-- Analytics Module
-- Reporting Dashboard
+- Live NSE Data
+- Machine Learning Forecasting
+- Portfolio Optimization
+- API Integration
+- Docker Deployment
 
 ---
 
-# 👨‍💻 Author
+## Author
 
 **Yashaswi R**
 
@@ -276,5 +389,4 @@ B.Tech CSE (Data Science)
 
 Data Analytics • AI/ML • Financial Intelligence
 
-GitHub:
-https://github.com/Yashr4635
+GitHub: [https://github.com/Yashr4635](https://github.com/Yashr4635)
