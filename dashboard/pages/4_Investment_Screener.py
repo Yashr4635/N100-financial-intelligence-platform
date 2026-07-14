@@ -7,7 +7,6 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 import plotly.express as px
-import plotly.graph_objects as go
 
 # --------------------------------------------------------------------------------
 # PAGE CONFIG
@@ -16,7 +15,7 @@ st.set_page_config(
     page_title="Investment Screener | N100 Financial Intelligence",
     page_icon="🧮",
     layout="wide",
-    initial_sidebar_state="expanded"
+    initial_sidebar_state="expanded",
 )
 
 DATA_PATH = "data/output/investment_screener.csv"
@@ -24,7 +23,8 @@ DATA_PATH = "data/output/investment_screener.csv"
 # --------------------------------------------------------------------------------
 # CUSTOM CSS (matches Home / Company Analysis / Sector Analysis theme)
 # --------------------------------------------------------------------------------
-st.markdown("""
+st.markdown(
+    """
 <style>
     .stApp {
         background: linear-gradient(180deg, #0e1117 0%, #12161f 100%);
@@ -129,7 +129,9 @@ st.markdown("""
     ::-webkit-scrollbar-track { background: #0e1117; }
     ::-webkit-scrollbar-thumb { background: #3a4152; border-radius: 4px; }
 </style>
-""", unsafe_allow_html=True)
+""",
+    unsafe_allow_html=True,
+)
 
 
 # --------------------------------------------------------------------------------
@@ -186,15 +188,20 @@ df = load_data(DATA_PATH)
 # --------------------------------------------------------------------------------
 # HERO SECTION
 # --------------------------------------------------------------------------------
-st.markdown("""
+st.markdown(
+    """
 <div class="hero-container">
     <div class="hero-title">🧮 Investment Screener</div>
     <div class="hero-subtitle">Screen, filter, and rank N100 companies by health score, financial quality, and investment rating</div>
 </div>
-""", unsafe_allow_html=True)
+""",
+    unsafe_allow_html=True,
+)
 
 if df.empty:
-    st.error(f"⚠️ Data file not found or empty at `{DATA_PATH}`. Please verify the file path.")
+    st.error(
+        f"⚠️ Data file not found or empty at `{DATA_PATH}`. Please verify the file path."
+    )
     st.stop()
 
 # --------------------------------------------------------------------------------
@@ -202,7 +209,9 @@ if df.empty:
 # --------------------------------------------------------------------------------
 st.sidebar.markdown("## 🔍 Screener Filters")
 
-search_query = st.sidebar.text_input("Company Search", placeholder="Type a company name...")
+search_query = st.sidebar.text_input(
+    "Company Search", placeholder="Type a company name..."
+)
 
 all_sectors = ["All"] + sorted(df["sector"].dropna().unique().tolist())
 selected_sector = st.sidebar.selectbox("Sector", options=all_sectors, index=0)
@@ -219,7 +228,7 @@ health_score_range = st.sidebar.slider(
     min_value=float(np.floor(hs_min)),
     max_value=float(np.ceil(hs_max)),
     value=(float(np.floor(hs_min)), float(np.ceil(hs_max))),
-    step=0.5
+    step=0.5,
 )
 
 fq_min = float(df["financial_quality_score"].min())
@@ -231,7 +240,7 @@ fq_score_range = st.sidebar.slider(
     min_value=float(np.floor(fq_min)),
     max_value=float(np.ceil(fq_max)),
     value=(float(np.floor(fq_min)), float(np.ceil(fq_max))),
-    step=0.5
+    step=0.5,
 )
 
 st.sidebar.markdown("---")
@@ -244,7 +253,9 @@ filtered_df = df.copy()
 
 if search_query.strip():
     filtered_df = filtered_df[
-        filtered_df["company_name"].str.contains(search_query.strip(), case=False, na=False)
+        filtered_df["company_name"].str.contains(
+            search_query.strip(), case=False, na=False
+        )
     ]
 
 if selected_sector != "All":
@@ -254,10 +265,10 @@ if selected_rating != "All":
     filtered_df = filtered_df[filtered_df["rating"] == selected_rating]
 
 filtered_df = filtered_df[
-    (filtered_df["health_score"] >= health_score_range[0]) &
-    (filtered_df["health_score"] <= health_score_range[1]) &
-    (filtered_df["financial_quality_score"] >= fq_score_range[0]) &
-    (filtered_df["financial_quality_score"] <= fq_score_range[1])
+    (filtered_df["health_score"] >= health_score_range[0])
+    & (filtered_df["health_score"] <= health_score_range[1])
+    & (filtered_df["financial_quality_score"] >= fq_score_range[0])
+    & (filtered_df["financial_quality_score"] <= fq_score_range[1])
 ]
 
 # --------------------------------------------------------------------------------
@@ -268,7 +279,9 @@ filtered_count = len(filtered_df)
 
 if filtered_count > 0:
     avg_health_score = filtered_df["health_score"].mean()
-    excellent_companies = filtered_df[filtered_df["rating"].str.contains("Excellent", case=False, na=False)].shape[0]
+    excellent_companies = filtered_df[
+        filtered_df["rating"].str.contains("Excellent", case=False, na=False)
+    ].shape[0]
     top_company_row = filtered_df.loc[filtered_df["health_score"].idxmax()]
     top_company = top_company_row["company_name"]
 else:
@@ -279,55 +292,72 @@ else:
 col1, col2, col3, col4, col5 = st.columns(5)
 
 with col1:
-    st.markdown(f"""
+    st.markdown(
+        f"""
     <div class="kpi-card kpi-accent-blue">
         <span class="kpi-icon">🏢</span>
         <div class="kpi-label">Total Companies</div>
         <div class="kpi-value">{total_companies}</div>
     </div>
-    """, unsafe_allow_html=True)
+    """,
+        unsafe_allow_html=True,
+    )
 
 with col2:
-    st.markdown(f"""
+    st.markdown(
+        f"""
     <div class="kpi-card kpi-accent-purple">
         <span class="kpi-icon">🧾</span>
         <div class="kpi-label">Filtered Companies</div>
         <div class="kpi-value">{filtered_count}</div>
     </div>
-    """, unsafe_allow_html=True)
+    """,
+        unsafe_allow_html=True,
+    )
 
 with col3:
-    st.markdown(f"""
+    st.markdown(
+        f"""
     <div class="kpi-card kpi-accent-green">
         <span class="kpi-icon">💠</span>
         <div class="kpi-label">Average Health Score</div>
         <div class="kpi-value">{avg_health_score:.2f}</div>
     </div>
-    """, unsafe_allow_html=True)
+    """,
+        unsafe_allow_html=True,
+    )
 
 with col4:
-    st.markdown(f"""
+    st.markdown(
+        f"""
     <div class="kpi-card kpi-accent-orange">
         <span class="kpi-icon">⭐</span>
         <div class="kpi-label">Excellent Companies</div>
         <div class="kpi-value">{excellent_companies}</div>
     </div>
-    """, unsafe_allow_html=True)
+    """,
+        unsafe_allow_html=True,
+    )
 
 with col5:
-    st.markdown(f"""
+    st.markdown(
+        f"""
     <div class="kpi-card kpi-accent-pink">
         <span class="kpi-icon">🏆</span>
         <div class="kpi-label">Top Company</div>
         <div class="kpi-value" style="font-size:1.15rem;">{top_company}</div>
     </div>
-    """, unsafe_allow_html=True)
+    """,
+        unsafe_allow_html=True,
+    )
 
 # --------------------------------------------------------------------------------
 # HANDLE EMPTY FILTER RESULTS
 # --------------------------------------------------------------------------------
 if filtered_df.empty:
-    st.warning("⚠️ No companies match the selected filters. Try adjusting the sidebar options.")
+    st.warning(
+        "⚠️ No companies match the selected filters. Try adjusting the sidebar options."
+    )
     st.stop()
 
 # --------------------------------------------------------------------------------
@@ -338,6 +368,7 @@ PAPER_BG = "rgba(0,0,0,0)"
 PLOT_BG = "rgba(0,0,0,0)"
 COLOR_SEQ = px.colors.sequential.Tealgrn + px.colors.sequential.Sunset
 
+
 def style_fig(fig, height=420):
     fig.update_layout(
         template=PLOTLY_TEMPLATE,
@@ -346,16 +377,19 @@ def style_fig(fig, height=420):
         font=dict(color="#e5e9f0", size=13),
         margin=dict(l=20, r=20, t=60, b=20),
         height=height,
-        legend=dict(bgcolor="rgba(0,0,0,0)")
+        legend=dict(bgcolor="rgba(0,0,0,0)"),
     )
     fig.update_xaxes(showgrid=True, gridcolor="rgba(255,255,255,0.06)")
     fig.update_yaxes(showgrid=True, gridcolor="rgba(255,255,255,0.06)")
     return fig
 
+
 # --------------------------------------------------------------------------------
 # CHARTS ROW 1: Health Score Histogram & Rating Pie
 # --------------------------------------------------------------------------------
-st.markdown('<div class="section-header">📊 Score Distributions</div>', unsafe_allow_html=True)
+st.markdown(
+    '<div class="section-header">📊 Score Distributions</div>', unsafe_allow_html=True
+)
 
 c1, c2 = st.columns(2)
 
@@ -365,7 +399,7 @@ with c1:
         x="health_score",
         nbins=25,
         color_discrete_sequence=["#4f9dfd"],
-        title="Health Score Distribution"
+        title="Health Score Distribution",
     )
     fig_hist.update_layout(bargap=0.05)
     st.plotly_chart(style_fig(fig_hist), use_container_width=True)
@@ -379,7 +413,7 @@ with c2:
         values="count",
         title="Rating Distribution",
         color_discrete_sequence=COLOR_SEQ,
-        hole=0.45
+        hole=0.45,
     )
     fig_pie.update_traces(textposition="inside", textinfo="percent+label")
     st.plotly_chart(style_fig(fig_pie), use_container_width=True)
@@ -395,7 +429,7 @@ with c3:
         x="financial_quality_score",
         nbins=25,
         color_discrete_sequence=["#a78bfa"],
-        title="Financial Quality Score Distribution"
+        title="Financial Quality Score Distribution",
     )
     fig_fq.update_layout(bargap=0.05)
     st.plotly_chart(style_fig(fig_fq), use_container_width=True)
@@ -408,15 +442,20 @@ with c4:
         color="rating",
         hover_name="company_name",
         title="Health Score vs Financial Quality Score",
-        color_discrete_sequence=COLOR_SEQ
+        color_discrete_sequence=COLOR_SEQ,
     )
-    fig_scatter.update_traces(marker=dict(size=9, opacity=0.8, line=dict(width=0.5, color="#0e1117")))
+    fig_scatter.update_traces(
+        marker=dict(size=9, opacity=0.8, line=dict(width=0.5, color="#0e1117"))
+    )
     st.plotly_chart(style_fig(fig_scatter), use_container_width=True)
 
 # --------------------------------------------------------------------------------
 # CHARTS ROW 3: Bubble Chart & Treemap
 # --------------------------------------------------------------------------------
-st.markdown('<div class="section-header">🧭 Multi-Dimensional Analysis</div>', unsafe_allow_html=True)
+st.markdown(
+    '<div class="section-header">🧭 Multi-Dimensional Analysis</div>',
+    unsafe_allow_html=True,
+)
 
 c5, c6 = st.columns(2)
 
@@ -430,9 +469,11 @@ with c5:
         hover_name="company_name",
         title="Bubble Chart: Health vs Quality (Size = Health Score)",
         color_discrete_sequence=COLOR_SEQ,
-        size_max=40
+        size_max=40,
     )
-    fig_bubble.update_traces(marker=dict(opacity=0.75, line=dict(width=0.5, color="#0e1117")))
+    fig_bubble.update_traces(
+        marker=dict(opacity=0.75, line=dict(width=0.5, color="#0e1117"))
+    )
     st.plotly_chart(style_fig(fig_bubble), use_container_width=True)
 
 with c6:
@@ -442,7 +483,7 @@ with c6:
         values="health_score",
         color="financial_quality_score",
         color_continuous_scale="Tealgrn",
-        title="Treemap: Sector → Company (Color = Financial Quality)"
+        title="Treemap: Sector → Company (Color = Financial Quality)",
     )
     fig_tree.update_traces(root_color="#1a1f2e")
     st.plotly_chart(style_fig(fig_tree, height=460), use_container_width=True)
@@ -450,7 +491,9 @@ with c6:
 # --------------------------------------------------------------------------------
 # TOP 20 COMPANIES BAR CHART
 # --------------------------------------------------------------------------------
-st.markdown('<div class="section-header">🏅 Top 20 Companies</div>', unsafe_allow_html=True)
+st.markdown(
+    '<div class="section-header">🏅 Top 20 Companies</div>', unsafe_allow_html=True
+)
 
 top20 = filtered_df.sort_values("health_score", ascending=False).head(20)
 fig_top20 = px.bar(
@@ -461,7 +504,7 @@ fig_top20 = px.bar(
     color="health_score",
     color_continuous_scale="Tealgrn",
     title="Top 20 Companies by Health Score",
-    labels={"health_score": "Health Score", "company_name": "Company"}
+    labels={"health_score": "Health Score", "company_name": "Company"},
 )
 fig_top20.update_coloraxes(showscale=False)
 st.plotly_chart(style_fig(fig_top20, height=600), use_container_width=True)
@@ -469,11 +512,17 @@ st.plotly_chart(style_fig(fig_top20, height=600), use_container_width=True)
 # --------------------------------------------------------------------------------
 # DATA TABLE
 # --------------------------------------------------------------------------------
-st.markdown('<div class="section-header">📋 Screener Results</div>', unsafe_allow_html=True)
+st.markdown(
+    '<div class="section-header">📋 Screener Results</div>', unsafe_allow_html=True
+)
 
 preferred_cols = [
-    "company_name", "ticker", "sector", "rating",
-    "health_score", "financial_quality_score"
+    "company_name",
+    "ticker",
+    "sector",
+    "rating",
+    "health_score",
+    "financial_quality_score",
 ]
 display_cols = [c for c in preferred_cols if c in filtered_df.columns]
 remaining_cols = [c for c in filtered_df.columns if c not in display_cols]
@@ -483,7 +532,7 @@ st.dataframe(
     filtered_df[final_cols].sort_values("health_score", ascending=False),
     use_container_width=True,
     height=440,
-    hide_index=True
+    hide_index=True,
 )
 
 # --------------------------------------------------------------------------------
@@ -496,7 +545,7 @@ st.download_button(
     data=csv_data,
     file_name="filtered_investment_screener.csv",
     mime="text/csv",
-    use_container_width=False
+    use_container_width=False,
 )
 
 st.markdown("<br>", unsafe_allow_html=True)

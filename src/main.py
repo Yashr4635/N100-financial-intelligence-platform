@@ -2,7 +2,6 @@ from src.etl.loader import ExcelLoader
 from src.etl.normalizer import DataNormalizer
 from src.etl.validator import DataValidator
 from src.database.connection import DatabaseManager
-from src.utils.logger import logger
 from src.analytics.ratio_engine import RatioEngine
 from src.analytics.health_score import HealthScoreEngine
 from src.analytics.sector_analysis import SectorAnalysis

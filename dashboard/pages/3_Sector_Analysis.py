@@ -7,8 +7,6 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 import plotly.express as px
-import plotly.graph_objects as go
-from pathlib import Path
 
 # --------------------------------------------------------------------------------
 # PAGE CONFIG
@@ -17,7 +15,7 @@ st.set_page_config(
     page_title="Sector Analysis | N100 Financial Intelligence",
     page_icon="🏭",
     layout="wide",
-    initial_sidebar_state="expanded"
+    initial_sidebar_state="expanded",
 )
 
 DATA_PATH = "data/output/sector_analysis.csv"
@@ -25,7 +23,8 @@ DATA_PATH = "data/output/sector_analysis.csv"
 # --------------------------------------------------------------------------------
 # CUSTOM CSS (matches Home / Company Analysis theme)
 # --------------------------------------------------------------------------------
-st.markdown("""
+st.markdown(
+    """
 <style>
     .stApp {
         background: linear-gradient(180deg, #0e1117 0%, #12161f 100%);
@@ -125,7 +124,9 @@ st.markdown("""
     ::-webkit-scrollbar-track { background: #0e1117; }
     ::-webkit-scrollbar-thumb { background: #3a4152; border-radius: 4px; }
 </style>
-""", unsafe_allow_html=True)
+""",
+    unsafe_allow_html=True,
+)
 
 
 # --------------------------------------------------------------------------------
@@ -158,7 +159,10 @@ def load_data(path: str) -> pd.DataFrame:
     df = df.rename(columns={k: v for k, v in rename_map.items() if k in df.columns})
 
     required_numeric = [
-        "avg_health_score", "avg_roe", "avg_profit_margin", "avg_debt_to_equity"
+        "avg_health_score",
+        "avg_roe",
+        "avg_profit_margin",
+        "avg_debt_to_equity",
     ]
     for col in required_numeric:
         if col not in df.columns:
@@ -185,15 +189,20 @@ df = load_data(DATA_PATH)
 # --------------------------------------------------------------------------------
 # HERO SECTION
 # --------------------------------------------------------------------------------
-st.markdown("""
+st.markdown(
+    """
 <div class="hero-container">
     <div class="hero-title">🏭 Sector Analysis Dashboard</div>
     <div class="hero-subtitle">Comparative performance, profitability, and risk metrics across sectors — N100 Financial Intelligence Platform</div>
 </div>
-""", unsafe_allow_html=True)
+""",
+    unsafe_allow_html=True,
+)
 
 if df.empty:
-    st.error(f"⚠️ Data file not found or empty at `{DATA_PATH}`. Please verify the file path.")
+    st.error(
+        f"⚠️ Data file not found or empty at `{DATA_PATH}`. Please verify the file path."
+    )
     st.stop()
 
 # --------------------------------------------------------------------------------
@@ -203,13 +212,17 @@ st.sidebar.markdown("## 🔍 Filters")
 
 all_sectors = sorted(df["sector"].dropna().unique().tolist())
 selected_sectors = st.sidebar.multiselect(
-    "Select Sector(s)",
-    options=all_sectors,
-    default=all_sectors
+    "Select Sector(s)", options=all_sectors, default=all_sectors
 )
 
-min_health = float(df["avg_health_score"].min()) if df["avg_health_score"].notna().any() else 0.0
-max_health = float(df["avg_health_score"].max()) if df["avg_health_score"].notna().any() else 100.0
+min_health = (
+    float(df["avg_health_score"].min()) if df["avg_health_score"].notna().any() else 0.0
+)
+max_health = (
+    float(df["avg_health_score"].max())
+    if df["avg_health_score"].notna().any()
+    else 100.0
+)
 if min_health == max_health:
     max_health = min_health + 1
 
@@ -218,7 +231,7 @@ min_health_score = st.sidebar.slider(
     min_value=float(np.floor(min_health)),
     max_value=float(np.ceil(max_health)),
     value=float(np.floor(min_health)),
-    step=0.5
+    step=0.5,
 )
 
 st.sidebar.markdown("---")
@@ -226,12 +239,13 @@ st.sidebar.caption("Data source: `sector_analysis.csv`")
 
 # Apply filters
 filtered_df = df[
-    (df["sector"].isin(selected_sectors)) &
-    (df["avg_health_score"] >= min_health_score)
+    (df["sector"].isin(selected_sectors)) & (df["avg_health_score"] >= min_health_score)
 ].copy()
 
 if filtered_df.empty:
-    st.warning("No sectors match the selected filters. Try adjusting the sidebar options.")
+    st.warning(
+        "No sectors match the selected filters. Try adjusting the sidebar options."
+    )
     st.stop()
 
 # --------------------------------------------------------------------------------
@@ -250,40 +264,52 @@ highest_roe_sector = highest_roe_row["sector"]
 col1, col2, col3, col4 = st.columns(4)
 
 with col1:
-    st.markdown(f"""
+    st.markdown(
+        f"""
     <div class="kpi-card kpi-accent-blue">
         <span class="kpi-icon">🏢</span>
         <div class="kpi-label">Total Sectors</div>
         <div class="kpi-value">{total_sectors}</div>
     </div>
-    """, unsafe_allow_html=True)
+    """,
+        unsafe_allow_html=True,
+    )
 
 with col2:
-    st.markdown(f"""
+    st.markdown(
+        f"""
     <div class="kpi-card kpi-accent-green">
         <span class="kpi-icon">🏆</span>
         <div class="kpi-label">Best Performing Sector</div>
         <div class="kpi-value" style="font-size:1.25rem;">{best_sector}</div>
     </div>
-    """, unsafe_allow_html=True)
+    """,
+        unsafe_allow_html=True,
+    )
 
 with col3:
-    st.markdown(f"""
+    st.markdown(
+        f"""
     <div class="kpi-card kpi-accent-purple">
         <span class="kpi-icon">💠</span>
         <div class="kpi-label">Average Health Score</div>
         <div class="kpi-value">{avg_health_score:.2f}</div>
     </div>
-    """, unsafe_allow_html=True)
+    """,
+        unsafe_allow_html=True,
+    )
 
 with col4:
-    st.markdown(f"""
+    st.markdown(
+        f"""
     <div class="kpi-card kpi-accent-orange">
         <span class="kpi-icon">📈</span>
         <div class="kpi-label">Highest ROE Sector</div>
         <div class="kpi-value" style="font-size:1.25rem;">{highest_roe_sector}</div>
     </div>
-    """, unsafe_allow_html=True)
+    """,
+        unsafe_allow_html=True,
+    )
 
 # --------------------------------------------------------------------------------
 # PLOTLY THEME HELPERS
@@ -293,6 +319,7 @@ PAPER_BG = "rgba(0,0,0,0)"
 PLOT_BG = "rgba(0,0,0,0)"
 COLOR_SEQ = px.colors.sequential.Tealgrn + px.colors.sequential.Sunset
 
+
 def style_fig(fig, height=420):
     fig.update_layout(
         template=PLOTLY_TEMPLATE,
@@ -301,16 +328,20 @@ def style_fig(fig, height=420):
         font=dict(color="#e5e9f0", size=13),
         margin=dict(l=20, r=20, t=60, b=20),
         height=height,
-        legend=dict(bgcolor="rgba(0,0,0,0)")
+        legend=dict(bgcolor="rgba(0,0,0,0)"),
     )
     fig.update_xaxes(showgrid=True, gridcolor="rgba(255,255,255,0.06)")
     fig.update_yaxes(showgrid=True, gridcolor="rgba(255,255,255,0.06)")
     return fig
 
+
 # --------------------------------------------------------------------------------
 # CHARTS ROW 1: Health Score (H-Bar) & ROE (Bar)
 # --------------------------------------------------------------------------------
-st.markdown('<div class="section-header">📊 Sector Performance Metrics</div>', unsafe_allow_html=True)
+st.markdown(
+    '<div class="section-header">📊 Sector Performance Metrics</div>',
+    unsafe_allow_html=True,
+)
 
 c1, c2 = st.columns(2)
 
@@ -324,7 +355,7 @@ with c1:
         color="avg_health_score",
         color_continuous_scale="Tealgrn",
         title="Average Health Score by Sector",
-        labels={"avg_health_score": "Avg Health Score", "sector": "Sector"}
+        labels={"avg_health_score": "Avg Health Score", "sector": "Sector"},
     )
     fig_health.update_coloraxes(showscale=False)
     st.plotly_chart(style_fig(fig_health), use_container_width=True)
@@ -338,7 +369,7 @@ with c2:
         color="avg_roe",
         color_continuous_scale="Sunset",
         title="Average ROE by Sector",
-        labels={"avg_roe": "Avg ROE (%)", "sector": "Sector"}
+        labels={"avg_roe": "Avg ROE (%)", "sector": "Sector"},
     )
     fig_roe.update_coloraxes(showscale=False)
     fig_roe.update_xaxes(tickangle=-35)
@@ -358,7 +389,7 @@ with c3:
         color="avg_profit_margin",
         color_continuous_scale="Blues",
         title="Average Profit Margin by Sector",
-        labels={"avg_profit_margin": "Avg Profit Margin (%)", "sector": "Sector"}
+        labels={"avg_profit_margin": "Avg Profit Margin (%)", "sector": "Sector"},
     )
     fig_margin.update_coloraxes(showscale=False)
     fig_margin.update_xaxes(tickangle=-35)
@@ -373,7 +404,7 @@ with c4:
         color="avg_debt_to_equity",
         color_continuous_scale="Oranges",
         title="Average Debt to Equity by Sector",
-        labels={"avg_debt_to_equity": "Avg Debt/Equity", "sector": "Sector"}
+        labels={"avg_debt_to_equity": "Avg Debt/Equity", "sector": "Sector"},
     )
     fig_de.update_coloraxes(showscale=False)
     fig_de.update_xaxes(tickangle=-35)
@@ -382,7 +413,9 @@ with c4:
 # --------------------------------------------------------------------------------
 # CHARTS ROW 3: Distribution (Pie) & Treemap
 # --------------------------------------------------------------------------------
-st.markdown('<div class="section-header">🧭 Sector Composition</div>', unsafe_allow_html=True)
+st.markdown(
+    '<div class="section-header">🧭 Sector Composition</div>', unsafe_allow_html=True
+)
 
 c5, c6 = st.columns(2)
 
@@ -393,7 +426,7 @@ with c5:
         values="num_companies",
         title="Sector Distribution (by Company Count)",
         color_discrete_sequence=COLOR_SEQ,
-        hole=0.45
+        hole=0.45,
     )
     fig_pie.update_traces(textposition="inside", textinfo="percent+label")
     st.plotly_chart(style_fig(fig_pie), use_container_width=True)
@@ -405,7 +438,7 @@ with c6:
         values="num_companies",
         color="avg_health_score",
         color_continuous_scale="Tealgrn",
-        title="Sector Treemap (Size = Companies, Color = Health Score)"
+        title="Sector Treemap (Size = Companies, Color = Health Score)",
     )
     fig_tree.update_traces(root_color="#1a1f2e")
     st.plotly_chart(style_fig(fig_tree), use_container_width=True)
@@ -413,11 +446,17 @@ with c6:
 # --------------------------------------------------------------------------------
 # DATA TABLE
 # --------------------------------------------------------------------------------
-st.markdown('<div class="section-header">📋 Sector Data Table</div>', unsafe_allow_html=True)
+st.markdown(
+    '<div class="section-header">📋 Sector Data Table</div>', unsafe_allow_html=True
+)
 
 display_cols = [
-    "sector", "num_companies", "avg_health_score",
-    "avg_roe", "avg_profit_margin", "avg_debt_to_equity"
+    "sector",
+    "num_companies",
+    "avg_health_score",
+    "avg_roe",
+    "avg_profit_margin",
+    "avg_debt_to_equity",
 ]
 display_cols = [c for c in display_cols if c in filtered_df.columns]
 
@@ -425,7 +464,7 @@ st.dataframe(
     filtered_df[display_cols].sort_values("avg_health_score", ascending=False),
     use_container_width=True,
     height=420,
-    hide_index=True
+    hide_index=True,
 )
 
 # --------------------------------------------------------------------------------
@@ -438,7 +477,7 @@ st.download_button(
     data=csv_data,
     file_name="filtered_sector_analysis.csv",
     mime="text/csv",
-    use_container_width=False
+    use_container_width=False,
 )
 
 st.markdown("<br>", unsafe_allow_html=True)

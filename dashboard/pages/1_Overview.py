@@ -53,10 +53,26 @@ TEXT_PRIMARY = "#E5E9F0"
 TEXT_MUTED = "#8B96AB"
 
 RATING_COLORS = {
-    "excellent": EMERALD, "strong": EMERALD, "good": BLUE,
-    "moderate": AMBER, "average": AMBER, "weak": RED, "poor": RED,
+    "excellent": EMERALD,
+    "strong": EMERALD,
+    "good": BLUE,
+    "moderate": AMBER,
+    "average": AMBER,
+    "weak": RED,
+    "poor": RED,
 }
-CATEGORY_PALETTE = [EMERALD, BLUE, VIOLET, AMBER, "#EC4899", "#14B8A6", RED, "#F97316", "#06B6D4", "#A855F7"]
+CATEGORY_PALETTE = [
+    EMERALD,
+    BLUE,
+    VIOLET,
+    AMBER,
+    "#EC4899",
+    "#14B8A6",
+    RED,
+    "#F97316",
+    "#06B6D4",
+    "#A855F7",
+]
 
 CUSTOM_CSS = f"""
 <style>
@@ -152,7 +168,11 @@ except Exception as e:
     st.error(f"Unable to load dashboard data.\n\n{e}")
     st.stop()
 
-for name, frame in [("company_health_scores.csv", health_raw), ("sector_analysis.csv", sector_raw), ("investment_screener.csv", screener_raw)]:
+for name, frame in [
+    ("company_health_scores.csv", health_raw),
+    ("sector_analysis.csv", sector_raw),
+    ("investment_screener.csv", screener_raw),
+]:
     if frame.empty:
         st.warning(f"{name} loaded but contains no rows.")
 
@@ -177,8 +197,12 @@ h_id = find_col(health_raw, ["id"])
 
 # sector_analysis.csv
 s_sector = find_col(sector_raw, ["broad_sector", "sector", "sector_name"])
-s_avg_health = find_col(sector_raw, ["avg_health_score", "health_score", "average_health_score"])
-s_companies = find_col(sector_raw, ["companies", "company_count", "num_companies", "n_companies"])
+s_avg_health = find_col(
+    sector_raw, ["avg_health_score", "health_score", "average_health_score"]
+)
+s_companies = find_col(
+    sector_raw, ["companies", "company_count", "num_companies", "n_companies"]
+)
 s_year = find_col(sector_raw, ["year", "fiscal_year", "fy"])
 s_id = find_col(sector_raw, ["id"])
 
@@ -186,12 +210,16 @@ s_id = find_col(sector_raw, ["id"])
 sc_company = find_col(screener_raw, ["company_id", "company", "symbol", "ticker"])
 sc_health = find_col(screener_raw, ["health_score", "health"])
 sc_rating = find_col(screener_raw, ["rating"])
-sc_fqs = find_col(screener_raw, ["financial_quality_score", "quality_score", "fin_quality_score"])
+sc_fqs = find_col(
+    screener_raw, ["financial_quality_score", "quality_score", "fin_quality_score"]
+)
 sc_year = find_col(screener_raw, ["year", "fiscal_year", "fy"])
 sc_id = find_col(screener_raw, ["id"])
 
 if h_company is None:
-    st.error(f"No company identifier column found in company_health_scores.csv (found: {list(health_raw.columns)}).")
+    st.error(
+        f"No company identifier column found in company_health_scores.csv (found: {list(health_raw.columns)})."
+    )
     st.stop()
 
 # =====================================================
@@ -199,7 +227,9 @@ if h_company is None:
 # =====================================================
 
 
-def dedupe(df: pd.DataFrame, subset_candidates, id_col=None) -> tuple[pd.DataFrame, int]:
+def dedupe(
+    df: pd.DataFrame, subset_candidates, id_col=None
+) -> tuple[pd.DataFrame, int]:
     subset = [c for c in subset_candidates if c is not None]
     if not subset:
         return df, 0
@@ -235,8 +265,8 @@ st.markdown(
 if total_dupes > 0:
     st.markdown(
         f'<div class="data-warning">⚠️ Removed {total_dupes} duplicate record(s) across the '
-        f'source files ({health_dupes} health, {sector_dupes} sector, {screener_dupes} screener). '
-        f'This is a data pipeline issue — check your ETL job.</div>',
+        f"source files ({health_dupes} health, {sector_dupes} sector, {screener_dupes} screener). "
+        f"This is a data pipeline issue — check your ETL job.</div>",
         unsafe_allow_html=True,
     )
 
@@ -247,7 +277,11 @@ if total_dupes > 0:
 companies_count = health[h_company].nunique()
 records_count = len(health)
 sectors_count = sector[s_sector].nunique() if s_sector else None
-avg_health = round(health[h_health].mean(), 1) if h_health and not health[h_health].dropna().empty else None
+avg_health = (
+    round(health[h_health].mean(), 1)
+    if h_health and not health[h_health].dropna().empty
+    else None
+)
 
 kpis = [
     ("Companies", companies_count),
@@ -278,7 +312,10 @@ st.write("")
 row1_left, row1_right = st.columns(2)
 
 with row1_left:
-    st.markdown('<div class="section-header">Health Score Distribution</div>', unsafe_allow_html=True)
+    st.markdown(
+        '<div class="section-header">Health Score Distribution</div>',
+        unsafe_allow_html=True,
+    )
     if h_health:
         hist_df = health.dropna(subset=[h_health])
         if not hist_df.empty:
@@ -308,11 +345,16 @@ with row1_left:
         st.info("Health score column not found in company_health_scores.csv.")
 
 with row1_right:
-    st.markdown('<div class="section-header">Rating Distribution</div>', unsafe_allow_html=True)
+    st.markdown(
+        '<div class="section-header">Rating Distribution</div>', unsafe_allow_html=True
+    )
     if h_rating:
         rating_counts = health[h_rating].dropna().value_counts()
         if not rating_counts.empty:
-            pie_colors = [RATING_COLORS.get(str(r).lower(), TEXT_MUTED) for r in rating_counts.index]
+            pie_colors = [
+                RATING_COLORS.get(str(r).lower(), TEXT_MUTED)
+                for r in rating_counts.index
+            ]
             fig_pie = px.pie(
                 names=rating_counts.index,
                 values=rating_counts.values,
@@ -343,9 +385,13 @@ st.write("")
 row2_left, row2_right = st.columns(2)
 
 with row2_left:
-    st.markdown('<div class="section-header">Sector Distribution</div>', unsafe_allow_html=True)
+    st.markdown(
+        '<div class="section-header">Sector Distribution</div>', unsafe_allow_html=True
+    )
     if s_sector and s_companies:
-        sec_dist = sector.dropna(subset=[s_sector, s_companies]).sort_values(s_companies, ascending=False)
+        sec_dist = sector.dropna(subset=[s_sector, s_companies]).sort_values(
+            s_companies, ascending=False
+        )
         if not sec_dist.empty:
             fig_bar1 = px.bar(
                 sec_dist,
@@ -372,12 +418,18 @@ with row2_left:
         )
 
 with row2_right:
-    st.markdown('<div class="section-header">Average Health by Sector</div>', unsafe_allow_html=True)
+    st.markdown(
+        '<div class="section-header">Average Health by Sector</div>',
+        unsafe_allow_html=True,
+    )
     if s_sector and s_avg_health:
-        sec_health = sector.dropna(subset=[s_sector, s_avg_health]).sort_values(s_avg_health, ascending=True)
+        sec_health = sector.dropna(subset=[s_sector, s_avg_health]).sort_values(
+            s_avg_health, ascending=True
+        )
         if not sec_health.empty:
             bar_colors = [
-                EMERALD if v >= 70 else AMBER if v >= 40 else RED for v in sec_health[s_avg_health]
+                EMERALD if v >= 70 else AMBER if v >= 40 else RED
+                for v in sec_health[s_avg_health]
             ]
             fig_bar2 = px.bar(
                 sec_health,
@@ -393,7 +445,9 @@ with row2_right:
                 font_color=TEXT_PRIMARY,
                 height=380,
                 margin=dict(l=10, r=10, t=10, b=10),
-                xaxis=dict(title="Average Health Score", gridcolor=NAVY_BORDER, range=[0, 100]),
+                xaxis=dict(
+                    title="Average Health Score", gridcolor=NAVY_BORDER, range=[0, 100]
+                ),
                 yaxis=dict(title="", gridcolor=NAVY_BORDER),
             )
             st.plotly_chart(fig_bar2, use_container_width=True)
@@ -411,7 +465,10 @@ st.write("")
 # TOP INVESTMENT OPPORTUNITIES + DOWNLOAD
 # =====================================================
 
-st.markdown('<div class="section-header">Top Investment Opportunities</div>', unsafe_allow_html=True)
+st.markdown(
+    '<div class="section-header">Top Investment Opportunities</div>',
+    unsafe_allow_html=True,
+)
 
 display_cols = [c for c in [sc_company, sc_health, sc_rating, sc_fqs] if c]
 if not screener.empty and display_cols:
@@ -429,14 +486,18 @@ if not screener.empty and display_cols:
             "Financial Quality", min_value=0, max_value=100, format="%.1f"
         )
 
-    st.dataframe(top_opps, use_container_width=True, column_config=col_config, hide_index=True)
+    st.dataframe(
+        top_opps, use_container_width=True, column_config=col_config, hide_index=True
+    )
 else:
     st.info(
         "Required columns not found in investment_screener.csv "
         f"(found: {list(screener_raw.columns)})."
     )
 
-download_df = screener.drop(columns=[sc_id]) if sc_id and sc_id in screener.columns else screener
+download_df = (
+    screener.drop(columns=[sc_id]) if sc_id and sc_id in screener.columns else screener
+)
 st.download_button(
     "⬇ Download Investment Screener",
     data=download_df.to_csv(index=False).encode("utf-8"),
@@ -450,6 +511,6 @@ st.download_button(
 
 st.markdown(
     '<div class="footer-note">N100 Financial Intelligence Platform • Overview • '
-    'Python · Pandas · Plotly · Streamlit</div>',
+    "Python · Pandas · Plotly · Streamlit</div>",
     unsafe_allow_html=True,
 )

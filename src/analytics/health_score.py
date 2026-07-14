@@ -1,13 +1,11 @@
 import pandas as pd
 from pathlib import Path
-from src.utils.logger import logger
+
 
 class HealthScoreEngine:
 
     def __init__(self):
-        self.df = pd.read_csv(
-            "data/output/financial_ratios_calculated.csv"
-        )
+        self.df = pd.read_csv("data/output/financial_ratios_calculated.csv")
 
     def calculate_score(self):
 
@@ -37,24 +35,13 @@ class HealthScoreEngine:
         self.df["rating"] = pd.cut(
             self.df["health_score"],
             bins=[-1, 39, 59, 74, 89, 100],
-            labels=[
-                "Poor",
-                "Average",
-                "Good",
-                "Very Good",
-                "Excellent"
-            ]
+            labels=["Poor", "Average", "Good", "Very Good", "Excellent"],
         )
 
         Path("data/output").mkdir(parents=True, exist_ok=True)
 
-        self.df.to_csv(
-            "data/output/company_health_scores.csv",
-            index=False
-        )
+        self.df.to_csv("data/output/company_health_scores.csv", index=False)
 
-        print(
-            f"Saved {len(self.df)} health scores."
-        )
+        print(f"Saved {len(self.df)} health scores.")
 
         return self.df

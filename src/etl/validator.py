@@ -1,6 +1,5 @@
 import pandas as pd
 from pathlib import Path
-from src.utils.logger import logger
 
 
 class DataValidator:
@@ -10,11 +9,7 @@ class DataValidator:
         self.failures = []
 
     def log_failure(self, dataset, rule, message):
-        self.failures.append({
-            "dataset": dataset,
-            "rule": rule,
-            "message": message
-        })
+        self.failures.append({"dataset": dataset, "rule": rule, "message": message})
 
     def validate(self):
 
@@ -74,13 +69,17 @@ class DataValidator:
                 if "company_id" in df.columns:
                     missing_ids = df["company_id"].isna().sum()
                     if missing_ids > 0:
-                        self.log_failure(name, "DQ-09", f"{missing_ids} missing company_id")
+                        self.log_failure(
+                            name, "DQ-09", f"{missing_ids} missing company_id"
+                        )
 
                 # Rule 10: mandatory year
                 if "year" in df.columns:
                     missing_years = df["year"].isna().sum()
                     if missing_years > 0:
-                        self.log_failure(name, "DQ-10", f"{missing_years} missing years")
+                        self.log_failure(
+                            name, "DQ-10", f"{missing_years} missing years"
+                        )
 
                 # Rule 11: negative sales
                 if "sales" in df.columns:

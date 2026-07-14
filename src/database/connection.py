@@ -1,7 +1,6 @@
 import sqlite3
 import pandas as pd
 from pathlib import Path
-from src.utils.logger import logger
 from src.utils.config import DATABASE_PATH
 
 
@@ -27,28 +26,27 @@ class DatabaseManager:
         for name, df in datasets.items():
 
             try:
-                df.to_sql(
-                    name,
-                    self.connection,
-                    if_exists="replace",
-                    index=False
-                )
+                df.to_sql(name, self.connection, if_exists="replace", index=False)
             except sqlite3.Error as e:
-                audit.append({
-                    "dataset": name,
-                    "rows_loaded": 0,
-                    "columns": len(df.columns),
-                    "status": f"FAILED: {e}"
-                })
+                audit.append(
+                    {
+                        "dataset": name,
+                        "rows_loaded": 0,
+                        "columns": len(df.columns),
+                        "status": f"FAILED: {e}",
+                    }
+                )
                 print(f"✗ {name:<20} -> FAILED: {e}")
                 continue
 
-            audit.append({
-                "dataset": name,
-                "rows_loaded": len(df),
-                "columns": len(df.columns),
-                "status": "SUCCESS"
-            })
+            audit.append(
+                {
+                    "dataset": name,
+                    "rows_loaded": len(df),
+                    "columns": len(df.columns),
+                    "status": "SUCCESS",
+                }
+            )
 
             print(f"✓ {name:<20} -> {len(df)} rows")
 
@@ -56,10 +54,7 @@ class DatabaseManager:
 
         audit_df = pd.DataFrame(audit)
 
-        audit_df.to_csv(
-            "reports/load_audit.csv",
-            index=False
-        )
+        audit_df.to_csv("reports/load_audit.csv", index=False)
 
         print("=" * 70)
         print("SQLite database created successfully.")

@@ -2,7 +2,6 @@ import pandas as pd
 import sqlite3
 from pathlib import Path
 from src.utils.config import DATABASE_PATH
-from src.utils.logger import logger
 
 DB_PATH = DATABASE_PATH
 OUTPUT = "data/output/financial_ratios_calculated.csv"
@@ -19,10 +18,7 @@ class RatioEngine:
         print("FINANCIAL RATIO ENGINE")
         print("=" * 70)
 
-        df = pd.read_sql(
-            "SELECT * FROM financial_ratios",
-            self.conn
-        )
+        df = pd.read_sql("SELECT * FROM financial_ratios", self.conn)
 
         # Convert numeric columns
         numeric_cols = [
@@ -35,7 +31,7 @@ class RatioEngine:
             "book_value_per_share",
             "free_cash_flow_cr",
             "cash_from_operations_cr",
-            "total_debt_cr"
+            "total_debt_cr",
         ]
 
         for col in numeric_cols:
@@ -43,9 +39,8 @@ class RatioEngine:
                 df[col] = pd.to_numeric(df[col], errors="coerce")
 
         # Derived metric
-        df["fcf_to_debt"] = (
-            df["free_cash_flow_cr"] /
-            df["total_debt_cr"].replace(0, pd.NA)
+        df["fcf_to_debt"] = df["free_cash_flow_cr"] / df["total_debt_cr"].replace(
+            0, pd.NA
         )
 
         # Quality score
@@ -61,10 +56,7 @@ class RatioEngine:
 
         Path("data/output").mkdir(parents=True, exist_ok=True)
 
-        df.to_csv(
-            OUTPUT,
-            index=False
-        )
+        df.to_csv(OUTPUT, index=False)
 
         print(f"\nSaved {len(df)} records")
         print(OUTPUT)

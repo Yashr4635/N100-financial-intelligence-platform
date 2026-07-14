@@ -216,7 +216,9 @@ def find_col(df: pd.DataFrame, candidates):
 # Screener's quality-score column — schema drift risk, same class of bug
 # that broke ROE/NPM on Company_Analysis.py. Resolve it once, here, instead
 # of assuming the literal string "financial_quality_score" always exists.
-col_fqs = find_col(screener, ["financial_quality_score", "quality_score", "fin_quality_score"])
+col_fqs = find_col(
+    screener, ["financial_quality_score", "quality_score", "fin_quality_score"]
+)
 
 
 def status_color(score):
@@ -273,11 +275,11 @@ score_range = st.sidebar.slider(
 
 st.sidebar.divider()
 st.sidebar.markdown("### ⚙️ Pipeline Status")
-st.sidebar.markdown(f"🟢 ETL Pipeline")
-st.sidebar.markdown(f"🟢 SQLite Database")
-st.sidebar.markdown(f"🟢 Analytics Engine")
-st.sidebar.markdown(f"🟢 Health Scoring")
-st.sidebar.markdown(f"🟢 Investment Screener")
+st.sidebar.markdown("🟢 ETL Pipeline")
+st.sidebar.markdown("🟢 SQLite Database")
+st.sidebar.markdown("🟢 Analytics Engine")
+st.sidebar.markdown("🟢 Health Scoring")
+st.sidebar.markdown("🟢 Investment Screener")
 
 st.sidebar.divider()
 st.sidebar.caption("Bluestock Internship Project")
@@ -301,18 +303,22 @@ if "health_score" in filtered_screener.columns:
         & (filtered_screener["health_score"] <= score_range[1])
     ]
 if selected_rating != "All Ratings" and "rating" in filtered_screener.columns:
-    filtered_screener = filtered_screener[filtered_screener["rating"] == selected_rating]
+    filtered_screener = filtered_screener[
+        filtered_screener["rating"] == selected_rating
+    ]
 
 filtered_sectors = sectors.copy()
 if selected_sector != "All Sectors" and "broad_sector" in filtered_sectors.columns:
-    filtered_sectors = filtered_sectors[filtered_sectors["broad_sector"] == selected_sector]
+    filtered_sectors = filtered_sectors[
+        filtered_sectors["broad_sector"] == selected_sector
+    ]
 
 # =====================================================
 # HERO SECTION
 # =====================================================
 
 st.markdown(
-    f"""
+    """
     <div class="hero">
         <div class="tag">LIVE ANALYTICS</div>
         <h1>📈 N100 Financial Intelligence Platform</h1>
@@ -326,16 +332,44 @@ st.markdown(
 # KPI STRIP
 # =====================================================
 
-avg_health = round(health["health_score"].mean(), 1) if "health_score" in health.columns else 0
-excellent_count = (health["rating"] == "Excellent").sum() if "rating" in health.columns else 0
+avg_health = (
+    round(health["health_score"].mean(), 1) if "health_score" in health.columns else 0
+)
+excellent_count = (
+    (health["rating"] == "Excellent").sum() if "rating" in health.columns else 0
+)
 excellent_pct = round((excellent_count / len(health)) * 100, 1) if len(health) else 0
 
 kpis = [
-    ("Companies Tracked", health["company_id"].nunique() if "company_id" in health.columns else len(health), None, None),
+    (
+        "Companies Tracked",
+        (
+            health["company_id"].nunique()
+            if "company_id" in health.columns
+            else len(health)
+        ),
+        None,
+        None,
+    ),
     ("Financial Records", len(health), None, None),
-    ("Sectors Covered", sectors["broad_sector"].nunique() if "broad_sector" in sectors.columns else "—", None, None),
-    ("Average Health Score", avg_health, status_color(avg_health), status_label(avg_health)),
-    ("Excellent-Rated Cos.", f"{excellent_count} ({excellent_pct}%)", EMERALD if excellent_pct > 20 else AMBER, None),
+    (
+        "Sectors Covered",
+        sectors["broad_sector"].nunique() if "broad_sector" in sectors.columns else "—",
+        None,
+        None,
+    ),
+    (
+        "Average Health Score",
+        avg_health,
+        status_color(avg_health),
+        status_label(avg_health),
+    ),
+    (
+        "Excellent-Rated Cos.",
+        f"{excellent_count} ({excellent_pct}%)",
+        EMERALD if excellent_pct > 20 else AMBER,
+        None,
+    ),
 ]
 
 cols = st.columns(5)
@@ -373,8 +407,15 @@ with tab_overview:
     col_left, col_right = st.columns([1.4, 1])
 
     with col_left:
-        st.markdown('<div class="section-header">Health Score Distribution — Top 15 Companies</div>', unsafe_allow_html=True)
-        if "health_score" in filtered.columns and "company_id" in filtered.columns and not filtered.empty:
+        st.markdown(
+            '<div class="section-header">Health Score Distribution — Top 15 Companies</div>',
+            unsafe_allow_html=True,
+        )
+        if (
+            "health_score" in filtered.columns
+            and "company_id" in filtered.columns
+            and not filtered.empty
+        ):
             top15 = filtered.sort_values("health_score", ascending=False).head(15)
             colors = [status_color(s) for s in top15["health_score"]]
             fig = go.Figure(
@@ -401,7 +442,10 @@ with tab_overview:
             st.info("No data available for the current filter selection.")
 
     with col_right:
-        st.markdown('<div class="section-header">Sector Composition</div>', unsafe_allow_html=True)
+        st.markdown(
+            '<div class="section-header">Sector Composition</div>',
+            unsafe_allow_html=True,
+        )
         if "broad_sector" in sectors.columns:
             sector_counts = sectors["broad_sector"].value_counts().reset_index()
             sector_counts.columns = ["sector", "count"]
@@ -425,11 +469,22 @@ with tab_overview:
         else:
             st.info("Sector column not found in dataset.")
 
-    st.markdown('<div class="section-header">Top Investment Opportunities</div>', unsafe_allow_html=True)
-    display_cols = [c for c in ["company_id", "health_score", "rating", col_fqs] if c and c in filtered_screener.columns]
+    st.markdown(
+        '<div class="section-header">Top Investment Opportunities</div>',
+        unsafe_allow_html=True,
+    )
+    display_cols = [
+        c
+        for c in ["company_id", "health_score", "rating", col_fqs]
+        if c and c in filtered_screener.columns
+    ]
     if not filtered_screener.empty and display_cols:
         top_opps = filtered_screener.sort_values(
-            "health_score" if "health_score" in filtered_screener.columns else display_cols[0],
+            (
+                "health_score"
+                if "health_score" in filtered_screener.columns
+                else display_cols[0]
+            ),
             ascending=False,
         ).head(10)[display_cols]
 
@@ -443,7 +498,12 @@ with tab_overview:
                 "Financial Quality", min_value=0, max_value=100, format="%.1f"
             )
 
-        st.dataframe(top_opps, use_container_width=True, column_config=col_config, hide_index=True)
+        st.dataframe(
+            top_opps,
+            use_container_width=True,
+            column_config=col_config,
+            hide_index=True,
+        )
     else:
         st.info("No investment opportunities match the current filters.")
 
@@ -452,7 +512,10 @@ with tab_overview:
 # -----------------------------------------------------
 with tab_companies:
 
-    st.markdown('<div class="section-header">Health Score vs. Financial Quality</div>', unsafe_allow_html=True)
+    st.markdown(
+        '<div class="section-header">Health Score vs. Financial Quality</div>',
+        unsafe_allow_html=True,
+    )
 
     # FIX #2: col_fqs (e.g. "financial_quality_score") exists in BOTH
     # health.csv and screener.csv. Merging two frames that share a column
@@ -462,12 +525,18 @@ with tab_companies:
     # existed. Fix: if filtered (health) already has the column, use it
     # directly and skip the merge entirely. Only merge from screener if
     # health doesn't have it.
-    if col_fqs and "health_score" in filtered.columns and "company_id" in filtered.columns:
+    if (
+        col_fqs
+        and "health_score" in filtered.columns
+        and "company_id" in filtered.columns
+    ):
         if col_fqs in filtered.columns:
             scatter_df = filtered.copy()
         else:
             merge_cols = ["company_id", col_fqs]
-            scatter_df = filtered.merge(screener[merge_cols], on="company_id", how="left")
+            scatter_df = filtered.merge(
+                screener[merge_cols], on="company_id", how="left"
+            )
         scatter_df = scatter_df.dropna(subset=["health_score", col_fqs])
 
         if not scatter_df.empty:
@@ -500,9 +569,14 @@ with tab_companies:
             f"{list(screener.columns)})."
         )
 
-    st.markdown('<div class="section-header">Full Company Table (Filtered)</div>', unsafe_allow_html=True)
+    st.markdown(
+        '<div class="section-header">Full Company Table (Filtered)</div>',
+        unsafe_allow_html=True,
+    )
 
-    table_cols = [c for c in ["company_id", "health_score", "rating"] if c in filtered.columns]
+    table_cols = [
+        c for c in ["company_id", "health_score", "rating"] if c in filtered.columns
+    ]
     if not filtered.empty and table_cols:
         col_config2 = {}
         if "health_score" in table_cols:
@@ -510,13 +584,17 @@ with tab_companies:
                 "Health Score", min_value=0, max_value=100, format="%.1f"
             )
         st.dataframe(
-            filtered[table_cols].sort_values(table_cols[1] if len(table_cols) > 1 else table_cols[0], ascending=False),
+            filtered[table_cols].sort_values(
+                table_cols[1] if len(table_cols) > 1 else table_cols[0], ascending=False
+            ),
             use_container_width=True,
             column_config=col_config2,
             hide_index=True,
             height=420,
         )
-        st.caption(f"Showing {len(filtered)} of {len(health)} companies based on active filters.")
+        st.caption(
+            f"Showing {len(filtered)} of {len(health)} companies based on active filters."
+        )
     else:
         st.info("No companies match the current filters. Try widening the score range.")
 
@@ -525,14 +603,25 @@ with tab_companies:
 # -----------------------------------------------------
 with tab_sectors:
 
-    st.markdown('<div class="section-header">Sector Breakdown</div>', unsafe_allow_html=True)
+    st.markdown(
+        '<div class="section-header">Sector Breakdown</div>', unsafe_allow_html=True
+    )
 
-    numeric_sector_cols = [c for c in sectors.select_dtypes(include="number").columns if c != "broad_sector"]
+    numeric_sector_cols = [
+        c
+        for c in sectors.select_dtypes(include="number").columns
+        if c != "broad_sector"
+    ]
 
     if "broad_sector" in filtered_sectors.columns and numeric_sector_cols:
         metric_choice = st.selectbox("Metric", numeric_sector_cols, index=0)
 
-        agg = filtered_sectors.groupby("broad_sector")[metric_choice].mean().reset_index().sort_values(metric_choice, ascending=False)
+        agg = (
+            filtered_sectors.groupby("broad_sector")[metric_choice]
+            .mean()
+            .reset_index()
+            .sort_values(metric_choice, ascending=False)
+        )
 
         fig4 = px.treemap(
             agg,
@@ -551,7 +640,9 @@ with tab_sectors:
     else:
         st.info("No numeric sector metrics available for visualization.")
 
-    st.markdown('<div class="section-header">Sector Data Table</div>', unsafe_allow_html=True)
+    st.markdown(
+        '<div class="section-header">Sector Data Table</div>', unsafe_allow_html=True
+    )
     if not filtered_sectors.empty:
         st.dataframe(filtered_sectors, use_container_width=True, hide_index=True)
     else:

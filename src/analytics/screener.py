@@ -1,6 +1,6 @@
 import pandas as pd
 from pathlib import Path
-from src.utils.logger import logger
+
 
 class InvestmentScreener:
     """
@@ -18,24 +18,16 @@ class InvestmentScreener:
         print("=" * 70)
 
         screen = self.df[
-            (self.df["health_score"] >= 80)
-            &
-            (self.df["financial_quality_score"] >= 4)
+            (self.df["health_score"] >= 80) & (self.df["financial_quality_score"] >= 4)
         ].copy()
 
-        screen = screen.sort_values(
-            by="health_score",
-            ascending=False
-        )
+        screen = screen.sort_values(by="health_score", ascending=False)
 
         Path("data/output").mkdir(parents=True, exist_ok=True)
 
         output_path = "data/output/investment_screener.csv"
 
-        screen.to_csv(
-            output_path,
-            index=False
-        )
+        screen.to_csv(output_path, index=False)
 
         print(f"Selected {len(screen)} companies")
         print(f"Saved to {output_path}")

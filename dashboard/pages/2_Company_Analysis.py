@@ -152,7 +152,9 @@ col_year = find_col(["year", "fiscal_year", "fy"])
 col_health = find_col(["health_score", "health"])
 col_rating = find_col(["rating"])
 col_roe = find_col(["return_on_equity_pct", "roe", "return_on_equity"])
-col_npm = find_col(["net_profit_margin_pct", "net_profit_margin", "npm", "profit_margin"])
+col_npm = find_col(
+    ["net_profit_margin_pct", "net_profit_margin", "npm", "profit_margin"]
+)
 col_opm = find_col(["operating_profit_margin_pct", "operating_profit_margin", "opm"])
 col_de = find_col(["debt_to_equity", "debt_equity_ratio", "de_ratio"])
 col_ic = find_col(["interest_coverage"])
@@ -201,7 +203,7 @@ st.markdown(
 if duplicates_found > 0:
     st.markdown(
         f'<div class="data-warning">⚠️ Removed {duplicates_found} duplicate (company, year) '
-        f'record(s) from the source data. This is a data pipeline issue — check your ETL job.</div>',
+        f"record(s) from the source data. This is a data pipeline issue — check your ETL job.</div>",
         unsafe_allow_html=True,
     )
 
@@ -261,21 +263,37 @@ def yoy_delta(col, decimals=2, suffix=""):
 
 
 RATING_COLORS = {
-    "excellent": EMERALD, "strong": EMERALD, "good": BLUE,
-    "moderate": AMBER, "average": AMBER, "weak": RED, "poor": RED,
+    "excellent": EMERALD,
+    "strong": EMERALD,
+    "good": BLUE,
+    "moderate": AMBER,
+    "average": AMBER,
+    "weak": RED,
+    "poor": RED,
 }
 
 # ---------------------------------------------------
 # KPI Row
 # ---------------------------------------------------
 
-period_label = f" ({int(latest_row[col_year])})" if col_year and not pd.isna(latest_row.get(col_year, None)) else ""
-st.markdown(f'<div class="section-header">Key Performance Indicators{period_label}</div>', unsafe_allow_html=True)
+period_label = (
+    f" ({int(latest_row[col_year])})"
+    if col_year and not pd.isna(latest_row.get(col_year, None))
+    else ""
+)
+st.markdown(
+    f'<div class="section-header">Key Performance Indicators{period_label}</div>',
+    unsafe_allow_html=True,
+)
 
 k1, k2, k3, k4, k5, k6 = st.columns(6)
 
 with k1:
-    st.metric("Health Score", safe_value(latest_row, col_health, decimals=1), delta=yoy_delta(col_health, decimals=1))
+    st.metric(
+        "Health Score",
+        safe_value(latest_row, col_health, decimals=1),
+        delta=yoy_delta(col_health, decimals=1),
+    )
 
 with k2:
     rating_val = safe_value(latest_row, col_rating, decimals=0) if col_rating else "N/A"
@@ -289,13 +307,25 @@ with k2:
     )
 
 with k3:
-    st.metric("ROE", safe_value(latest_row, col_roe, suffix="%"), delta=yoy_delta(col_roe, suffix="%"))
+    st.metric(
+        "ROE",
+        safe_value(latest_row, col_roe, suffix="%"),
+        delta=yoy_delta(col_roe, suffix="%"),
+    )
 
 with k4:
-    st.metric("Net Profit Margin", safe_value(latest_row, col_npm, suffix="%"), delta=yoy_delta(col_npm, suffix="%"))
+    st.metric(
+        "Net Profit Margin",
+        safe_value(latest_row, col_npm, suffix="%"),
+        delta=yoy_delta(col_npm, suffix="%"),
+    )
 
 with k5:
-    st.metric("Debt to Equity", safe_value(latest_row, col_de, decimals=3), delta=yoy_delta(col_de, decimals=3))
+    st.metric(
+        "Debt to Equity",
+        safe_value(latest_row, col_de, decimals=3),
+        delta=yoy_delta(col_de, decimals=3),
+    )
 
 with k6:
     st.metric("EPS", safe_value(latest_row, col_eps), delta=yoy_delta(col_eps))
@@ -306,12 +336,18 @@ st.write("")
 # Trend charts
 # ---------------------------------------------------
 
-st.markdown('<div class="section-header">Historical Trends</div>', unsafe_allow_html=True)
+st.markdown(
+    '<div class="section-header">Historical Trends</div>', unsafe_allow_html=True
+)
 
 if col_year is None:
-    st.info("No year/fiscal-period column found — trend charts require a time dimension.")
+    st.info(
+        "No year/fiscal-period column found — trend charts require a time dimension."
+    )
 elif len(company_df) < 2:
-    st.info("Only one historical record for this company — trends require at least two periods.")
+    st.info(
+        "Only one historical record for this company — trends require at least two periods."
+    )
 else:
     chart_specs = [
         ("ROE", col_roe, EMERALD, "%"),
@@ -321,10 +357,14 @@ else:
         ("Operating Profit Margin", col_opm, "#EC4899", "%"),
         ("Free Cash Flow (Cr)", col_fcf, "#14B8A6", ""),
     ]
-    chart_specs = [c for c in chart_specs if c[1] is not None and not company_df[c[1]].dropna().empty]
+    chart_specs = [
+        c
+        for c in chart_specs
+        if c[1] is not None and not company_df[c[1]].dropna().empty
+    ]
 
     for row_start in range(0, len(chart_specs), 3):
-        row_specs = chart_specs[row_start: row_start + 3]
+        row_specs = chart_specs[row_start : row_start + 3]
         chart_cols = st.columns(3)
         for chart_col, (title, metric_col, color, suffix) in zip(chart_cols, row_specs):
             with chart_col:
@@ -337,7 +377,9 @@ else:
                         y=plot_df[metric_col],
                         mode="lines+markers",
                         line=dict(color=color, width=3, shape="spline"),
-                        marker=dict(size=7, color=color, line=dict(width=1, color=NAVY_BG)),
+                        marker=dict(
+                            size=7, color=color, line=dict(width=1, color=NAVY_BG)
+                        ),
                         fill="tozeroy",
                         fillcolor=hex_to_rgba(color, alpha=0.09),
                         hovertemplate=f"%{{x}}<br>%{{y}}{suffix}<extra></extra>",
@@ -364,7 +406,9 @@ st.write("")
 # Full historical table
 # ---------------------------------------------------
 
-st.markdown('<div class="section-header">Full Historical Record</div>', unsafe_allow_html=True)
+st.markdown(
+    '<div class="section-header">Full Historical Record</div>', unsafe_allow_html=True
+)
 
 display_df = company_df.copy()
 if col_id and col_id in display_df.columns:

@@ -1,5 +1,5 @@
 import pandas as pd
-from src.utils.logger import logger
+
 
 class DataNormalizer:
     """
@@ -12,8 +12,7 @@ class DataNormalizer:
     @staticmethod
     def clean_column_names(df: pd.DataFrame) -> pd.DataFrame:
         df.columns = (
-            df.columns
-            .str.strip()
+            df.columns.str.strip()
             .str.lower()
             .str.replace(" ", "_")
             .str.replace("-", "_")
@@ -24,20 +23,10 @@ class DataNormalizer:
     def clean_company_id(df: pd.DataFrame) -> pd.DataFrame:
 
         if "company_id" in df.columns:
-            df["company_id"] = (
-                df["company_id"]
-                .astype(str)
-                .str.strip()
-                .str.upper()
-            )
+            df["company_id"] = df["company_id"].astype(str).str.strip().str.upper()
 
         if "id" in df.columns:
-            df["id"] = (
-                df["id"]
-                .astype(str)
-                .str.strip()
-                .str.upper()
-            )
+            df["id"] = df["id"].astype(str).str.strip().str.upper()
 
         return df
 
@@ -47,11 +36,7 @@ class DataNormalizer:
         if "year" not in df.columns:
             return df
 
-        df["year"] = (
-            df["year"]
-            .astype(str)
-            .str.extract(r'(\d{2,4})')[0]
-        )
+        df["year"] = df["year"].astype(str).str.extract(r"(\d{2,4})")[0]
 
         return df
 
