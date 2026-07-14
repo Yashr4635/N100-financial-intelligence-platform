@@ -11,7 +11,10 @@ class DatabaseManager:
     """
 
     def __init__(self):
-        self.connection = sqlite3.connect(DATABASE_PATH)
+        try:
+            self.connection = sqlite3.connect(DATABASE_PATH)
+        except sqlite3.Error as e:
+            raise RuntimeError(f"Database connection failed: {e}")
 
     def save_datasets(self, datasets: dict):
 
@@ -23,12 +26,22 @@ class DatabaseManager:
 
         for name, df in datasets.items():
 
-            df.to_sql(
-                name,
-                self.connection,
-                if_exists="replace",
-                index=False
-            )
+            try:
+                df.to_sql(
+                    name,
+                    self.connection,
+                    if_exists="replace",
+                    index=False
+                )
+            except sqlite3.Error as e:
+                audit.append({
+                    "dataset": name,
+                    "rows_loaded": 0,
+                    "columns": len(df.columns),
+                    "status": f"FAILED: {e}"
+                })
+                print(f"✗ {name:<20} -> FAILED: {e}")
+                continue
 
             audit.append({
                 "dataset": name,

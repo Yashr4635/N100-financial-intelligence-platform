@@ -128,11 +128,13 @@ class DataValidator:
         self.save_report()
 
     def save_report(self):
+        try:
+            report = pd.DataFrame(self.failures)
 
-        report = pd.DataFrame(self.failures)
+            Path("reports").mkdir(exist_ok=True)
 
-        Path("reports").mkdir(exist_ok=True)
+            report.to_csv("reports/validation_failures.csv", index=False)
 
-        report.to_csv("reports/validation_failures.csv", index=False)
-
-        print("\nValidation report saved.")
+            print("\nValidation report saved.")
+        except Exception as e:
+            raise RuntimeError(f"Validation failed: {e}")

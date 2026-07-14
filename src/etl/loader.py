@@ -37,17 +37,21 @@ class ExcelLoader:
 
             try:
                 df = pd.read_excel(file, header=header)
-                self.datasets[file.stem] = df
-
-                print(
-                    f"[✓] {file.name:<25}"
-                    f" Rows: {df.shape[0]:>5}"
-                    f" Cols: {df.shape[1]:>3}"
-                    f" Header={header}"
-                )
-
+            except FileNotFoundError as e:
+                print(f"[✗] {file.name} -> Dataset not found: {file}")
+                continue
             except Exception as e:
-                print(f"[✗] {file.name} -> {e}")
+                print(f"[✗] {file.name} -> Failed to load: {e}")
+                continue
+
+            self.datasets[file.stem] = df
+
+            print(
+                f"[✓] {file.name:<25}"
+                f" Rows: {df.shape[0]:>5}"
+                f" Cols: {df.shape[1]:>3}"
+                f" Header={header}"
+            )
 
         print("=" * 70)
         print(f"Loaded {len(self.datasets)} datasets successfully.")
