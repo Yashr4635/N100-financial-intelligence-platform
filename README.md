@@ -390,3 +390,7 @@ B.Tech CSE (Data Science)
 Data Analytics • AI/ML • Financial Intelligence
 
 GitHub: [https://github.com/Yashr4635](https://github.com/Yashr4635)
+
+## Live Demo
+
+https://n100-financial-intelligence-platform-mkqsnvgduesqxum8y8jjn4.streamlit.app/
