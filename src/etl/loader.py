@@ -1,7 +1,9 @@
 from pathlib import Path
-import pandas as pd
-from src.utils.logger import logger
+from typing import Dict
 
+import pandas as pd
+
+from src.utils.logger import logger
 from src.utils.config import RAW_DATA_DIR
 
 # Files that contain metadata in the first row
@@ -24,7 +26,7 @@ class ExcelLoader:
     def __init__(self):
         self.datasets = {}
 
-    def load_all(self):
+    def load_all(self) -> Dict[str, pd.DataFrame]:
         excel_files = sorted(RAW_DATA_DIR.glob("*.xlsx"))
 
         print("\n" + "=" * 70)
@@ -38,7 +40,7 @@ class ExcelLoader:
 
             try:
                 df = pd.read_excel(file, header=header)
-            except FileNotFoundError as e:
+            except FileNotFoundError:
                 print(f"[✗] {file.name} -> Dataset not found: {file}")
                 continue
             except Exception as e:
