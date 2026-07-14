@@ -1,8 +1,10 @@
 import pandas as pd
 import sqlite3
 from pathlib import Path
+from src.utils.config import DATABASE_PATH
+from src.utils.logger import logger
 
-DB_PATH = "database/nifty100.db"
+DB_PATH = DATABASE_PATH
 OUTPUT = "data/output/financial_ratios_calculated.csv"
 
 
