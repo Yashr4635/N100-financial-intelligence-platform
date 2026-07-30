@@ -2,6 +2,7 @@ import sqlite3
 
 import pandas as pd
 
+from src.analytics.radar import RadarChartEngine
 from src.etl.loader import ExcelLoader
 from src.etl.normalizer import DataNormalizer
 from src.etl.validator import DataValidator
@@ -17,51 +18,56 @@ from src.utils.config import DATABASE_PATH
 
 def main():
 
-    # ---------------- ETL ----------------
-    loader = ExcelLoader()
-    datasets = loader.load_all()
-
-    normalizer = DataNormalizer(datasets)
-    clean_data = normalizer.normalize()
-
-    validator = DataValidator(clean_data)
-    validator.validate()
-
     db = DatabaseManager()
-    db.save_datasets(clean_data)
 
-    print("\nETL Pipeline Completed Successfully!")
+    try:
+        # ---------------- ETL ----------------
+        loader = ExcelLoader()
+        datasets = loader.load_all()
 
-    # ---------------- Analytics ----------------
-    ratio = RatioEngine()
-    ratio.run()
+        normalizer = DataNormalizer(datasets)
+        clean_data = normalizer.normalize()
 
-    health = HealthScoreEngine()
-    health_df = health.calculate_score()
+        validator = DataValidator(clean_data)
+        validator.validate()
 
-    sector = SectorAnalysis()
-    sector.run()
+        db.save_datasets(clean_data)
 
-    screener = InvestmentScreener(health_df)
-    screener.run()
+        print("\nETL Pipeline Completed Successfully!")
 
-    # PeerComparisonEngine needs sector info, which health_df does not carry
-    # on its own (mirrors the same company_id -> sectors join SectorAnalysis uses).
-    sector_conn = sqlite3.connect(DATABASE_PATH)
-    sectors_df = pd.read_sql("SELECT * FROM sectors", sector_conn)
-    sector_conn.close()
+        # ---------------- Analytics ----------------
+        ratio = RatioEngine()
+        ratio.run()
 
-    peer_input_df = health_df.merge(sectors_df, on="company_id", how="left")
+        health = HealthScoreEngine()
+        health_df = health.calculate_score()
 
-    peer = PeerComparisonEngine(peer_input_df)
-    peer_df = peer.run()
+        sector = SectorAnalysis()
+        sector.run()
 
-    reporting = ReportingEngine()
-    reporting.run()
+        screener = InvestmentScreener(health_df)
+        screener.run()
 
-    print("\nAnalytics Pipeline Completed Successfully!")
+        # PeerComparisonEngine needs sector info
+        sector_conn = sqlite3.connect(DATABASE_PATH)
+        sectors_df = pd.read_sql("SELECT * FROM sectors", sector_conn)
+        sector_conn.close()
 
-    db.close()
+        peer_input_df = health_df.merge(sectors_df, on="company_id", how="left")
+
+        peer = PeerComparisonEngine(peer_input_df)
+        peer.run()
+
+        reporting = ReportingEngine()
+        reporting.run()
+
+        radar = RadarChartEngine()
+        radar.run()
+
+        print("\nAnalytics Pipeline Completed Successfully!")
+
+    finally:
+        db.close()
 
 
 if __name__ == "__main__":
