@@ -11,6 +11,7 @@ from src.analytics.health_score import HealthScoreEngine
 from src.analytics.sector_analysis import SectorAnalysis
 from src.analytics.screener import InvestmentScreener
 from src.analytics.peer import PeerComparisonEngine
+from src.analytics.reporting import ReportingEngine
 from src.utils.config import DATABASE_PATH
 
 
@@ -54,6 +55,9 @@ def main():
 
     peer = PeerComparisonEngine(peer_input_df)
     peer_df = peer.run()
+
+    reporting = ReportingEngine()
+    reporting.run()
 
     print("\nAnalytics Pipeline Completed Successfully!")
 
