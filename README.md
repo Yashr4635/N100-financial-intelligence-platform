@@ -4,7 +4,7 @@
 
 ### Enterprise-Grade Financial Analytics System for NIFTY 100 Companies
 
-**ETL Automation • Data Validation • Financial Ratio Engine • Health Scoring • Sector Analytics • Investment Screening • Interactive Dashboard**
+**ETL Automation • Data Validation • Financial Ratio Engine • Health Scoring • Sector Analytics • Peer Comparison • Radar Chart Engine • Valuation Engine • Investment Screening • Interactive Dashboard**
 
 [![Python](https://img.shields.io/badge/Python-3.10%2B-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/)
 [![Pandas](https://img.shields.io/badge/Pandas-Data%20Engine-150458?style=for-the-badge&logo=pandas&logoColor=white)](https://pandas.pydata.org/)
@@ -42,6 +42,7 @@
 - [Screenshots](#-screenshots)
 - [Installation](#-installation)
 - [Usage](#-usage)
+- [Outputs Generated](#-outputs-generated)
 - [Testing](#-testing)
 - [Code Quality](#-code-quality)
 - [Deployment](#-deployment)
@@ -55,7 +56,7 @@
 
 ## 🧭 Overview
 
-The **N100 Financial Intelligence Platform** is an end-to-end financial analytics system built with **Python, SQLite, Pandas, and Streamlit**. It transforms raw, messy Excel exports of NIFTY 100 company financials into a clean, validated, queryable data warehouse — then layers on a full analytics stack: financial ratios, company health scoring, sector benchmarking, an investment screener, and a live interactive dashboard.
+The **N100 Financial Intelligence Platform** is an end-to-end financial analytics system built with **Python, SQLite, Pandas, and Streamlit**. It transforms raw, messy Excel exports of NIFTY 100 company financials into a clean, validated, queryable data warehouse — then layers on a full analytics stack: financial ratios, company health scoring, sector benchmarking, peer comparison, radar-chart visual profiling, a valuation engine, an investment screener, and a live interactive multi-page dashboard.
 
 It automates:
 
@@ -66,6 +67,9 @@ It automates:
 | 📊 | Financial Ratio Calculation |
 | 💯 | Company Health Score |
 | 🏭 | Sector Analytics |
+| 🤝 | Peer Comparison |
+| 🕸️ | Radar Chart Generation |
+| 💰 | Valuation Analysis |
 | 🔎 | Investment Screening |
 | 🖥️ | Interactive Dashboard |
 
@@ -75,9 +79,9 @@ It automates:
 
 <div align="center">
 
-| 📁 12 Datasets | 🏢 92 Companies | 🏭 10 Sectors | 📈 1,000+ Records | ✅ 16 Validation Rules |
-|:---:|:---:|:---:|:---:|:---:|
-| Excel sources ingested | NIFTY 100 coverage | Fully benchmarked | Loaded & validated | Data quality gates |
+| 📁 12 Datasets | 🏢 92 Companies | 🏭 10 Sectors | 📈 1,184 Records | 🗄️ 12 SQLite Tables | ✅ 16 Validation Rules | 🕸️ 92 Radar Charts |
+|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
+| Excel sources ingested | NIFTY 100 coverage | Fully benchmarked | Loaded & validated | Relational warehouse | Data quality gates | Auto-generated PNGs |
 
 </div>
 
@@ -93,8 +97,12 @@ It automates:
 - ✅ **Financial Ratio Engine** — ROE, margins, leverage, and quality scoring
 - ✅ **Health Score Engine** — weighted 0–100 company health scoring
 - ✅ **Sector Analytics** — sector-level performance benchmarking
+- ✅ **Peer Comparison Engine** — cross-company benchmarking within sector/peer groups
+- ✅ **Radar Chart Engine** — auto-generated multi-metric visual company profiles (92 PNGs)
+- ✅ **Valuation Engine** — valuation summary generation with flagged over/undervaluation signals
 - ✅ **Investment Screener** — rules-based company shortlisting
-- ✅ **Interactive Streamlit Dashboard** — Plotly-powered, multi-page, filterable
+- ✅ **Reporting Engine** — executive summary and analytics summary exports
+- ✅ **Interactive Streamlit Dashboard** — 8-page, Plotly-powered, multi-page, filterable
 - ✅ **Unit Testing** — Pytest coverage across core modules
 - ✅ **Error Handling & Logging** — structured logs across the pipeline
 - ✅ **Config-Driven Architecture** — no hardcoded paths or thresholds
@@ -146,18 +154,25 @@ It automates:
                            │
                            ▼
                 ┌────────────────────┐
-                │   SQLite Database   │  ← nifty100.db
+                │   SQLite Database   │  ← nifty100.db (12 tables)
                 └──────────┬─────────┘
                            │
                            ▼
+                ┌────────────────────────────────────────────┐
+                │              Analytics Engine                │
+                │  Ratios · Health Score · Sector · Peer       │
+                │  Comparison · Radar Charts · Valuation       │
+                └──────────┬───────────────────────────────────┘
+                           │
+                           ▼
                 ┌────────────────────┐
-                │   Analytics Engine  │  ← ratios, health score, sectors
+                │   Reporting Layer   │  ← CSV / XLSX exports
                 └──────────┬─────────┘
                            │
                            ▼
                 ┌────────────────────┐
                 │   Streamlit         │
-                │   Dashboard         │
+                │   8-Page Dashboard  │
                 └────────────────────┘
 ```
 
@@ -169,30 +184,43 @@ It automates:
 N100-Financial-Intelligence-Platform/
 │
 ├── dashboard/
-│   └── app.py                     # Streamlit entry point
+│   └── app.py                       # Streamlit entry point
 │
 ├── src/
-│   ├── etl/                       # Loading, normalization, validation
-│   ├── database/                  # SQLite connection & schema logic
-│   ├── analytics/                 # Ratio engine, health score, screener
-│   ├── dashboard/                 # Dashboard page components
-│   └── utils/                     # Shared helpers, config, logging
+│   ├── etl/                         # Loading, normalization, validation
+│   ├── database/                    # SQLite connection & schema logic
+│   ├── analytics/                   # Ratios, health score, sector, peer,
+│   │                                 # radar chart, valuation, screener
+│   ├── dashboard/                   # Dashboard page components
+│   └── utils/                       # Shared helpers, config, logging
 │
 ├── database/
-│   └── nifty100.db                # Generated SQLite warehouse
+│   └── nifty100.db                  # Generated SQLite warehouse
 │
 ├── data/
-│   ├── raw/                       # Original Excel exports
-│   ├── processed/                 # Cleaned intermediate data
-│   └── output/                    # Final load-ready datasets
+│   ├── raw/                         # Original Excel exports
+│   ├── processed/                   # Cleaned intermediate data
+│   └── output/                      # Final load-ready datasets
+│
+├── outputs/
+│   ├── financial_ratios_calculated.csv
+│   ├── company_health_scores.csv
+│   ├── sector_analysis.csv
+│   ├── investment_screener.csv
+│   ├── peer_comparison.csv
+│   ├── analytics_summary.xlsx
+│   ├── executive_summary.csv
+│   ├── valuation_summary.xlsx
+│   ├── valuation_flags.csv
+│   └── radar_charts/                # 92 auto-generated PNGs
 │
 ├── reports/
-│   ├── validation_failures.csv    # Data quality failure log
-│   └── load_audit.csv             # ETL load audit trail
+│   ├── validation_failures.csv      # Data quality failure log
+│   └── load_audit.csv               # ETL load audit trail
 │
 ├── sql/
-│   ├── schema.sql                 # Table definitions
-│   └── exploratory_queries.sql    # Analyst SQL queries
+│   ├── schema.sql                   # Table definitions
+│   └── exploratory_queries.sql      # Analyst SQL queries
 │
 ├── tests/
 │   ├── test_loader.py
@@ -202,10 +230,14 @@ N100-Financial-Intelligence-Platform/
 │
 ├── docs/
 │   └── screenshots/
-│       ├── overview.png
-│       ├── company_analysis.png
-│       ├── sector_analysis.png
-│       └── investment_screener.png
+│       ├── home.png
+│       ├── company_profile.png
+│       ├── investment_screener.png
+│       ├── peer_comparison.png
+│       ├── financial_trends.png
+│       ├── sector_dashboard.png
+│       ├── capital_allocation.png
+│       └── reports.png
 │
 ├── requirements.txt
 └── README.md
@@ -216,11 +248,12 @@ N100-Financial-Intelligence-Platform/
 | `dashboard/` | Streamlit application entry point |
 | `src/etl/` | Excel loading, normalization, and validation logic |
 | `src/database/` | Database connection, schema creation, and load routines |
-| `src/analytics/` | Financial ratio engine, health scoring, sector analytics, screener |
+| `src/analytics/` | Financial ratio engine, health scoring, sector analytics, peer comparison, radar chart engine, valuation engine, screener |
 | `src/dashboard/` | Reusable UI components for dashboard pages |
 | `src/utils/` | Configuration, logging, and shared utility functions |
 | `database/` | Generated SQLite data warehouse |
 | `data/` | Raw, processed, and output-stage datasets |
+| `outputs/` | Final analytics exports (CSV, XLSX, radar chart PNGs) |
 | `reports/` | Auto-generated validation and audit reports |
 | `sql/` | Schema definitions and exploratory SQL |
 | `tests/` | Pytest unit test suite |
@@ -234,9 +267,9 @@ N100-Financial-Intelligence-Platform/
 |---|---|
 | **`src/etl/`** | Reads raw Excel files, detects headers dynamically, normalizes schemas, and applies the 16-rule validation engine before loading. |
 | **`src/database/`** | Manages the SQLite connection, applies `schema.sql`, and performs idempotent, auditable loads into the warehouse. |
-| **`src/analytics/`** | Houses the Financial Ratio Engine, Health Score Engine, Sector Analytics, and Investment Screener logic. |
+| **`src/analytics/`** | Houses the Financial Ratio Engine, Health Score Engine, Sector Analytics, Peer Comparison Engine, Radar Chart Engine, Valuation Engine, and Investment Screener logic. |
 | **`src/utils/`** | Centralizes configuration, path management, and structured logging used across all modules. |
-| **`src/dashboard/`** | Provides the page-level components (Overview, Company Analysis, Sector Analysis, Investment Screener) consumed by `dashboard/app.py`. |
+| **`src/dashboard/`** | Provides the page-level components (Home, Company Profile, Investment Screener, Peer Comparison, Financial Trends, Sector Dashboard, Capital Allocation, Reports) consumed by `dashboard/app.py`. |
 
 ---
 
@@ -331,10 +364,10 @@ Every run produces a `reports/validation_failures.csv` audit trail of any record
 
 ## 📐 Analytics Modules
 
-### 🧮 Financial Ratio Engine
+<details>
+<summary><b>🧮 Financial Ratio Engine</b></summary>
 
 Calculates, per company/year:
-
 - Return on Equity (ROE)
 - Profit Margin
 - Debt to Equity
@@ -342,59 +375,109 @@ Calculates, per company/year:
 - Earnings Per Share (EPS)
 - Financial Quality Score
 
-### 💯 Health Score Engine
+</details>
+
+<details>
+<summary><b>💯 Health Score Engine</b></summary>
 
 Generates a **weighted score out of 100** using:
-
 - ROE
 - Profit Margin
 - Debt
 - Asset Turnover
 - EPS
 
-### 🏭 Sector Analytics
+</details>
+
+<details>
+<summary><b>🏭 Sector Analytics</b></summary>
 
 Benchmarks companies across their sector using:
-
 - Sector Performance
 - Average ROE
 - Average Health Score
 - Debt Analysis
-- 
 
-### 🔎 Investment Screener
+</details>
+
+<details>
+<summary><b>🤝 Peer Comparison Engine</b></summary>
+
+Compares each company against its peer group on:
+- Ratio-by-ratio benchmarking
+- Health Score differential
+- Relative sector standing
+
+</details>
+
+<details>
+<summary><b>🕸️ Radar Chart Engine</b></summary>
+
+Generates a multi-metric radar chart PNG per company (92 total), plotting normalized values across ROE, margin, leverage, turnover, and health score for at-a-glance visual profiling.
+
+</details>
+
+<details>
+<summary><b>💰 Valuation Engine</b></summary>
+
+Produces a valuation summary and flags companies as potentially over- or under-valued based on ratio and price-based signals, exported to `valuation_summary.xlsx` and `valuation_flags.csv`.
+
+</details>
+
+<details>
+<summary><b>🔎 Investment Screener</b></summary>
 
 Shortlists companies using rules such as:
-
 - Health Score ≥ 80
 - Financial Quality ≥ 4
+
+</details>
 
 ---
 
 ## 🖥 Dashboard
 
-An interactive, multi-page **Streamlit** dashboard powered by **Plotly** visualizations, KPI cards, and dynamic filters.
+An interactive, **8-page Streamlit** dashboard powered by **Plotly** visualizations, KPI cards, and dynamic filters.
+
+### Dashboard Pages
 
 | Page | Description |
 |---|---|
-| 🏠 **Overview** | High-level KPIs across the full NIFTY 100 universe |
-| 🏢 **Company Analysis** | Deep-dive financials, ratios, and trends per company |
-| 🏭 **Sector Analysis** | Sector-level benchmarking and comparisons |
+| 🏠 **Home** | High-level KPIs across the full NIFTY 100 universe |
+| 🏢 **Company Profile** | Deep-dive financials, ratios, radar chart, and trends per company |
 | 🔎 **Investment Screener** | Filterable, rules-based company shortlisting |
+| 🤝 **Peer Comparison** | Side-by-side benchmarking against peer group |
+| 📈 **Financial Trends** | Multi-year ratio and performance trend visualization |
+| 🏭 **Sector Dashboard** | Sector-level benchmarking and comparisons |
+| 💰 **Capital Allocation** | Capital structure and allocation analysis |
+| 📄 **Reports** | Executive summary and downloadable analytics exports |
 
 ---
 
 ## 📸 Screenshots
+
 <table>
   <tr>
-    <td align="center" width="50%"><b>🏠 Overview</b><br><img src="docs/screenshots/Screenshot%202026-07-14%20at%201.29.30%20PM.png" width="420"/></td>
-    <td align="center" width="50%"><b>🏢 Company Analysis</b><br><img src="docs/screenshots/Screenshot%202026-07-14%20at%201.29.42%20PM.png" width="420"/></td>
+    <td align="center" width="50%"><b>🏠 Home</b><br><img src="docs/screenshots/home.png" width="420"/></td>
+    <td align="center" width="50%"><b>🏢 Company Profile</b><br><img src="docs/screenshots/company_profile.png" width="420"/></td>
   </tr>
   <tr>
-    <td align="center" width="50%"><b>🏭 Sector Analysis</b><br><img src="docs/screenshots/Screenshot%202026-07-14%20at%201.29.51%20PM.png" width="420"/></td>
-    <td align="center" width="50%"><b>🔎 Investment Screener</b><br><img src="docs/screenshots/Screenshot%202026-07-14%20at%201.29.58%20PM.png" width="420"/></td>
+    <td align="center" width="50%"><b>🔎 Investment Screener</b><br><img src="docs/screenshots/investment_screener.png" width="420"/></td>
+    <td align="center" width="50%"><b>🤝 Peer Comparison</b><br><img src="docs/screenshots/peer_comparison.png" width="420"/></td>
+  </tr>
+  <tr>
+    <td align="center" width="50%"><b>📈 Financial Trends</b><br><img src="docs/screenshots/financial_trends.png" width="420"/></td>
+    <td align="center" width="50%"><b>🏭 Sector Dashboard</b><br><img src="docs/screenshots/sector_dashboard.png" width="420"/></td>
+  </tr>
+  <tr>
+    <td align="center" width="50%"><b>💰 Capital Allocation</b><br><img src="docs/screenshots/capital_allocation.png" width="420"/></td>
+    <td align="center" width="50%"><b>📄 Reports</b><br><img src="docs/screenshots/reports.png" width="420"/></td>
   </tr>
 </table>
+
+> ⚠️ Replace placeholder screenshot filenames above with your actual exported images before publishing.
+
+---
 
 ## ⚙️ Installation
 
@@ -420,14 +503,29 @@ pip install -r requirements.txt
 
 ## ▶️ Usage
 
+### Running the ETL Pipeline
+
 ```bash
 # Run the full ETL pipeline (load, normalize, validate, warehouse)
 python -m src.main
+```
 
-# Launch the interactive dashboard
+### Running Analytics (Ratios, Health Score, Peer Comparison, Radar Charts, Valuation)
+
+```bash
+# Run the full analytics suite and generate all outputs
+python -m src.analytics.run_all
+```
+
+### Running the Dashboard
+
+```bash
 streamlit run dashboard/app.py
+```
 
-# Run the full test suite
+### Running Tests
+
+```bash
 pytest tests -v
 ```
 
@@ -440,6 +538,27 @@ sqlite> SELECT company_id, roe, health_score FROM financial_ratios ORDER BY heal
 ```
 
 </details>
+
+---
+
+## 📦 Outputs Generated
+
+<div align="center">
+
+| Output File | Description |
+|---|---|
+| `financial_ratios_calculated.csv` | Full ratio engine output per company/year |
+| `company_health_scores.csv` | Weighted 0–100 health score per company |
+| `sector_analysis.csv` | Sector-level benchmarking metrics |
+| `investment_screener.csv` | Shortlisted companies from screener rules |
+| `peer_comparison.csv` | Peer-group benchmarking results |
+| `analytics_summary.xlsx` | Consolidated analytics workbook |
+| `executive_summary.csv` | High-level summary export |
+| `valuation_summary.xlsx` | Valuation engine output workbook |
+| `valuation_flags.csv` | Over/undervaluation flags per company |
+| `radar_charts/*.png` | 92 individual company radar chart profiles |
+
+</div>
 
 ---
 
@@ -490,12 +609,14 @@ Deployed on **Streamlit Community Cloud**.
 | Metric | Value |
 |---|---|
 | Excel Datasets Ingested | 12 |
-| Financial Records Processed | 1,000+ |
+| Financial Records Processed | 1,184 |
 | Companies Covered | 92 |
 | Sectors Benchmarked | 10 |
+| SQLite Tables | 12 |
 | Validation Rules Enforced | 16 |
+| Radar Charts Generated | 92 |
 | Storage Engine | SQLite Data Warehouse |
-| Dashboard | Fully Interactive (Plotly + Streamlit) |
+| Dashboard Pages | 8 (Fully Interactive — Plotly + Streamlit) |
 
 </div>
 
@@ -511,8 +632,12 @@ Deployed on **Streamlit Community Cloud**.
 - [x] Financial Ratio Engine
 - [x] Health Score Engine
 - [x] Sector Analytics
+- [x] Peer Comparison Engine
+- [x] Radar Chart Engine
+- [x] Valuation Engine
 - [x] Investment Screener
-- [x] Streamlit Dashboard
+- [x] Reporting Engine
+- [x] 8-Page Streamlit Dashboard
 - [x] Unit Testing
 - [x] SQL Schema
 - [x] Load Audit Reporting
@@ -542,7 +667,6 @@ Contributions are welcome! To contribute:
 
 Please run `pytest tests -v` and ensure `black`/`ruff` checks pass before submitting.
 
-
 ---
 
 ## 📄 License
@@ -555,7 +679,7 @@ This project is licensed under the **MIT License** — see the [LICENSE](LICENSE
 
 <div align="center">
 
-### ** DS Yashaswi **
+### **DS Yashaswi**
 
 **B.Tech CSE (Data Science)**
 Python Developer • Data Analyst • Financial Analytics
