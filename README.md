@@ -19,7 +19,7 @@
 [![Maintenance](https://img.shields.io/badge/Maintained-Yes-blue?style=flat-square)](#)
 [![PRs Welcome](https://img.shields.io/badge/PRs-Welcome-ff69b4.svg?style=flat-square)](#-contributing)
 
-[**🚀 Live Demo**](https://n100-financial-intelligence-platform-mkqsnvgduesqxum8y8jjn4.streamlit.app/) · [**📖 Documentation**](#-table-of-contents) · [**🐛 Report Bug**](https://github.com/Yashr4635/N100-financial-intelligence-platform/issues) · [**✨ Request Feature**](https://github.com/Yashr4635/N100-financial-intelligence-platform/issues)
+[**🚀 Live Demo**](https://n100-financial-intelligence-platform-xwvsj4aaugscczp2uv4vyy.streamlit.app/) · [**📖 Documentation**](#-table-of-contents) · [**🐛 Report Bug**](https://github.com/Yashr4635/N100-financial-intelligence-platform/issues) · [**✨ Request Feature**](https://github.com/Yashr4635/N100-financial-intelligence-platform/issues)
 
 </div>
 
