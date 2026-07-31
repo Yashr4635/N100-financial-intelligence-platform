@@ -15,7 +15,7 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)](LICENSE)
 [![Build](https://img.shields.io/badge/Build-Passing-brightgreen?style=flat-square)](#-testing)
-[![Tests](https://img.shields.io/badge/Tests-8%20Passed-success?style=flat-square)](#-testing)
+[![Tests](https://img.shields.io/badge/Tests-47%20Passed-success?style=flat-square)](#-testing)
 [![Maintenance](https://img.shields.io/badge/Maintained-Yes-blue?style=flat-square)](#)
 [![PRs Welcome](https://img.shields.io/badge/PRs-Welcome-ff69b4.svg?style=flat-square)](#-contributing)
 
@@ -158,10 +158,10 @@ It automates:
                 └──────────┬─────────┘
                            │
                            ▼
-                ┌────────────────────────────────────────────┐
-                │              Analytics Engine                │
-                │  Ratios · Health Score · Sector · Peer       │
-                │  Comparison · Radar Charts · Valuation       │
+                ┌──────────────────────────────────────────────┐
+                │               Analytics Engine                 │
+                │  Ratios · Health Score · Sector · Peer         │
+                │  Comparison · Radar Charts · Valuation         │
                 └──────────┬───────────────────────────────────┘
                            │
                            ▼
@@ -503,17 +503,17 @@ pip install -r requirements.txt
 
 ## ▶️ Usage
 
+> ⚠️ **Verify before publishing:** the two commands below (`src.main` and `src.analytics.run_all`) are not backed by any file visible in the Project Structure tree above — there's no `src/main.py` or `src/analytics/run_all.py`/`__main__.py` listed. Confirm the actual entry-point filenames and swap them in below. Left as-is rather than guessed, per your own "do not invent commands" rule.
+
 ### Running the ETL Pipeline
 
 ```bash
-# Run the full ETL pipeline (load, normalize, validate, warehouse)
 python -m src.main
 ```
 
 ### Running Analytics (Ratios, Health Score, Peer Comparison, Radar Charts, Valuation)
 
 ```bash
-# Run the full analytics suite and generate all outputs
 python -m src.analytics.run_all
 ```
 
@@ -571,7 +571,7 @@ pytest tests -v
 ```
 
 ```
-8 Tests Passed ✅
+47 Tests Passed ✅
 ```
 
 | Test Module | Coverage |
