@@ -1,7 +1,8 @@
 """
 Reports Dashboard page.
 
-Central hub for all Sprint 1-3 output artifacts:
+Central hub for all Sprint 1–5 output artifacts:
+    Sprint 1-4:
     - data/output/executive_summary.csv
     - data/output/analytics_summary.xlsx
     - data/output/company_health_scores.csv
@@ -11,8 +12,19 @@ Central hub for all Sprint 1-3 output artifacts:
     - data/output/sector_analysis.csv
     - reports/radar_charts/
 
-This page only READS the pre-computed Sprint 1-3 outputs. No analytics
-logic is implemented or modified here.
+    Sprint 5:
+    - data/output/analysis_parsed.csv
+    - data/output/parse_failures.csv
+    - data/output/pros_cons_generated.csv
+    - data/output/cashflow_intelligence.xlsx
+    - data/output/distress_alerts.csv
+    - data/output/pattern_changes.csv
+    - reports/tearsheets/
+    - reports/sector/
+    - reports/portfolio/portfolio_summary.pdf
+
+This page only READS pre-computed outputs. No analytics logic is
+implemented or modified here.
 """
 
 from datetime import datetime
@@ -29,6 +41,11 @@ PROJECT_ROOT = Path(__file__).resolve().parents[3]
 OUTPUT_DIR = PROJECT_ROOT / "data" / "output"
 RADAR_CHARTS_DIR = PROJECT_ROOT / "reports" / "radar_charts"
 
+# Sprint 5 directories
+TEARSHEETS_DIR = PROJECT_ROOT / "reports" / "tearsheets"
+SECTOR_REPORTS_DIR = PROJECT_ROOT / "reports" / "sector"
+PORTFOLIO_DIR = PROJECT_ROOT / "reports" / "portfolio"
+
 EXEC_SUMMARY_PATH = OUTPUT_DIR / "executive_summary.csv"
 ANALYTICS_SUMMARY_PATH = OUTPUT_DIR / "analytics_summary.xlsx"
 HEALTH_SCORES_PATH = OUTPUT_DIR / "company_health_scores.csv"
@@ -37,8 +54,18 @@ INVESTMENT_SCREENER_PATH = OUTPUT_DIR / "investment_screener.csv"
 PEER_COMPARISON_PATH = OUTPUT_DIR / "peer_comparison.csv"
 SECTOR_ANALYSIS_PATH = OUTPUT_DIR / "sector_analysis.csv"
 
+# Sprint 5 paths
+ANALYSIS_PARSED_PATH = OUTPUT_DIR / "analysis_parsed.csv"
+PARSE_FAILURES_PATH = OUTPUT_DIR / "parse_failures.csv"
+PROS_CONS_PATH = OUTPUT_DIR / "pros_cons_generated.csv"
+CASHFLOW_INTEL_PATH = OUTPUT_DIR / "cashflow_intelligence.xlsx"
+DISTRESS_ALERTS_PATH = OUTPUT_DIR / "distress_alerts.csv"
+PATTERN_CHANGES_PATH = OUTPUT_DIR / "pattern_changes.csv"
+PORTFOLIO_SUMMARY_PATH = PORTFOLIO_DIR / "portfolio_summary.pdf"
+
 # Registry of all downloadable / previewable reports on this page.
 REPORTS = [
+    # Sprint 1-4
     {"label": "Executive Summary", "path": EXEC_SUMMARY_PATH, "type": "csv"},
     {"label": "Company Health Scores", "path": HEALTH_SCORES_PATH, "type": "csv"},
     {"label": "Financial Ratios", "path": FINANCIAL_RATIOS_PATH, "type": "csv"},
@@ -46,6 +73,14 @@ REPORTS = [
     {"label": "Peer Comparison", "path": PEER_COMPARISON_PATH, "type": "csv"},
     {"label": "Sector Analysis", "path": SECTOR_ANALYSIS_PATH, "type": "csv"},
     {"label": "Analytics Summary", "path": ANALYTICS_SUMMARY_PATH, "type": "xlsx"},
+    # Sprint 5
+    {"label": "Analysis Parsed (NLP)", "path": ANALYSIS_PARSED_PATH, "type": "csv"},
+    {"label": "Parse Failures (NLP)", "path": PARSE_FAILURES_PATH, "type": "csv"},
+    {"label": "Pros & Cons Generated", "path": PROS_CONS_PATH, "type": "csv"},
+    {"label": "Cashflow Intelligence", "path": CASHFLOW_INTEL_PATH, "type": "xlsx"},
+    {"label": "Distress Alerts", "path": DISTRESS_ALERTS_PATH, "type": "csv"},
+    {"label": "Capital Allocation Changes", "path": PATTERN_CHANGES_PATH, "type": "csv"},
+    {"label": "Portfolio Summary PDF", "path": PORTFOLIO_SUMMARY_PATH, "type": "pdf"},
 ]
 
 
@@ -326,3 +361,193 @@ with stat_cols[2]:
 with stat_cols[3]:
     with st.container(border=True):
         st.metric("Last Updated", last_updated)
+
+st.divider()
+
+# ===========================================================================
+# Sprint 5 Sections
+# ===========================================================================
+st.header("🚀 Sprint 5 Intelligence Outputs")
+
+# ---------------------------------------------------------------------------
+# S5.1 – Pros & Cons Viewer
+# ---------------------------------------------------------------------------
+st.subheader("✅⚠️ Pros & Cons by Company")
+pros_cons_df = load_csv(PROS_CONS_PATH)
+
+if pros_cons_df.empty:
+    st.info("Pros & Cons not yet generated. Run the pipeline to generate `pros_cons_generated.csv`.")
+else:
+    company_ids_pc = sorted(pros_cons_df["company_id"].dropna().unique().tolist()) \
+        if "company_id" in pros_cons_df.columns else []
+    if company_ids_pc:
+        selected_pc = st.selectbox("Select company for Pros & Cons", options=company_ids_pc,
+                                   key="pc_company_select")
+        company_pc = pros_cons_df[pros_cons_df["company_id"] == selected_pc]
+        pros = company_pc[company_pc["type"] == "Pro"] if "type" in company_pc.columns else company_pc
+        cons = company_pc[company_pc["type"] == "Con"] if "type" in company_pc.columns else company_pc
+
+        col_pros, col_cons = st.columns(2)
+        with col_pros:
+            with st.container(border=True):
+                st.markdown("**✅ Pros**")
+                if pros.empty:
+                    st.caption("No pros generated for this company.")
+                else:
+                    for _, row in pros.iterrows():
+                        conf = row.get("confidence", "")
+                        conf_str = f" *(confidence: {conf:.0%})*" if isinstance(conf, float) else ""
+                        st.markdown(f"- {row.get('insight', '')}{conf_str}")
+        with col_cons:
+            with st.container(border=True):
+                st.markdown("**⚠️ Cons**")
+                if cons.empty:
+                    st.caption("No cons generated for this company.")
+                else:
+                    for _, row in cons.iterrows():
+                        conf = row.get("confidence", "")
+                        conf_str = f" *(confidence: {conf:.0%})*" if isinstance(conf, float) else ""
+                        st.markdown(f"- {row.get('insight', '')}{conf_str}")
+
+st.divider()
+
+# ---------------------------------------------------------------------------
+# S5.2 – Distress Alerts
+# ---------------------------------------------------------------------------
+st.subheader("🚨 Distress Alerts")
+distress_df = load_csv(DISTRESS_ALERTS_PATH)
+if distress_df.empty:
+    st.success("✅ No distress alerts found — all companies appear financially stable.")
+else:
+    st.error(f"⚠️ {len(distress_df)} distress record(s) detected.")
+    st.dataframe(distress_df, hide_index=True, use_container_width=True)
+    file_bytes_distress = read_file_bytes(DISTRESS_ALERTS_PATH)
+    if file_bytes_distress:
+        st.download_button(
+            "⬇️ Download Distress Alerts CSV",
+            data=file_bytes_distress,
+            file_name="distress_alerts.csv",
+            mime="text/csv",
+            key="download_distress_alerts",
+        )
+
+st.divider()
+
+# ---------------------------------------------------------------------------
+# S5.3 – Capital Allocation Pattern Changes
+# ---------------------------------------------------------------------------
+st.subheader("📊 Capital Allocation Pattern Changes")
+pattern_df = load_csv(PATTERN_CHANGES_PATH)
+if pattern_df.empty:
+    st.info("No capital allocation pattern changes detected yet.")
+else:
+    st.dataframe(pattern_df, hide_index=True, use_container_width=True)
+    file_bytes_pattern = read_file_bytes(PATTERN_CHANGES_PATH)
+    if file_bytes_pattern:
+        st.download_button(
+            "⬇️ Download Pattern Changes CSV",
+            data=file_bytes_pattern,
+            file_name="pattern_changes.csv",
+            mime="text/csv",
+            key="download_pattern_changes",
+        )
+
+st.divider()
+
+# ---------------------------------------------------------------------------
+# S5.4 – NLP Parse Results
+# ---------------------------------------------------------------------------
+st.subheader("🔍 NLP Parse Results")
+parsed_col, failures_col = st.columns(2)
+
+with parsed_col:
+    with st.container(border=True):
+        parsed_df = load_csv(ANALYSIS_PARSED_PATH)
+        st.markdown(f"**Parsed Records: {len(parsed_df):,}**")
+        if not parsed_df.empty:
+            st.dataframe(parsed_df.head(10), hide_index=True, use_container_width=True)
+            fb = read_file_bytes(ANALYSIS_PARSED_PATH)
+            if fb:
+                st.download_button("⬇️ Download Parsed CSV", fb,
+                                   "analysis_parsed.csv", "text/csv",
+                                   key="dl_parsed")
+
+with failures_col:
+    with st.container(border=True):
+        failures_df = load_csv(PARSE_FAILURES_PATH)
+        st.markdown(f"**Parse Failures: {len(failures_df):,}**")
+        if not failures_df.empty:
+            st.dataframe(failures_df.head(10), hide_index=True, use_container_width=True)
+            fb2 = read_file_bytes(PARSE_FAILURES_PATH)
+            if fb2:
+                st.download_button("⬇️ Download Failures CSV", fb2,
+                                   "parse_failures.csv", "text/csv",
+                                   key="dl_failures")
+
+st.divider()
+
+# ---------------------------------------------------------------------------
+# S5.5 – Company Tearsheets Gallery
+# ---------------------------------------------------------------------------
+st.subheader("📑 Company Tearsheets")
+tearsheet_files = sorted(TEARSHEETS_DIR.glob("*_tearsheet.pdf")) if TEARSHEETS_DIR.exists() else []
+if not tearsheet_files:
+    st.info("No tearsheets generated yet. Run the pipeline to generate tearsheet PDFs.")
+else:
+    st.success(f"✅ {len(tearsheet_files)} tearsheets available.")
+    tickers_ts = [f.stem.replace("_tearsheet", "") for f in tearsheet_files]
+    selected_ts = st.selectbox("Select company tearsheet", options=sorted(tickers_ts),
+                               key="ts_select")
+    selected_ts_path = TEARSHEETS_DIR / f"{selected_ts}_tearsheet.pdf"
+    ts_bytes = read_file_bytes(selected_ts_path)
+    if ts_bytes:
+        st.download_button(
+            f"⬇️ Download {selected_ts} Tearsheet PDF",
+            data=ts_bytes,
+            file_name=f"{selected_ts}_tearsheet.pdf",
+            mime="application/pdf",
+            key=f"dl_ts_{selected_ts}",
+        )
+
+st.divider()
+
+# ---------------------------------------------------------------------------
+# S5.6 – Sector Reports
+# ---------------------------------------------------------------------------
+st.subheader("🏭 Sector Reports")
+sector_pdfs = sorted(SECTOR_REPORTS_DIR.glob("*.pdf")) if SECTOR_REPORTS_DIR.exists() else []
+if not sector_pdfs:
+    st.info("No sector reports generated yet. Run the pipeline to generate sector PDFs.")
+else:
+    st.success(f"✅ {len(sector_pdfs)} sector reports available.")
+    sector_names = [f.stem.replace("_report", "").replace("_", " ") for f in sector_pdfs]
+    selected_sr = st.selectbox("Select sector report", options=sector_names, key="sr_select")
+    selected_sr_path = sector_pdfs[sector_names.index(selected_sr)]
+    sr_bytes = read_file_bytes(selected_sr_path)
+    if sr_bytes:
+        st.download_button(
+            f"⬇️ Download {selected_sr} Sector Report",
+            data=sr_bytes,
+            file_name=selected_sr_path.name,
+            mime="application/pdf",
+            key=f"dl_sr_{selected_sr}",
+        )
+
+st.divider()
+
+# ---------------------------------------------------------------------------
+# S5.7 – Portfolio Summary PDF
+# ---------------------------------------------------------------------------
+st.subheader("📋 Portfolio Summary")
+portfolio_bytes = read_file_bytes(PORTFOLIO_SUMMARY_PATH)
+if portfolio_bytes:
+    st.success("✅ Portfolio summary PDF ready.")
+    st.download_button(
+        "⬇️ Download Portfolio Summary PDF",
+        data=portfolio_bytes,
+        file_name="portfolio_summary.pdf",
+        mime="application/pdf",
+        key="dl_portfolio",
+    )
+else:
+    st.info("Portfolio summary PDF not yet generated. Run the pipeline to generate it.")
